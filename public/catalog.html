@@ -7,14 +7,14 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
   <link rel="stylesheet" href="styles/bootstrap-material-design.min.css">
   <link rel="stylesheet" href="styles/main.css">
-  <title>Home</title>
+  <title>Visited</title>
 </head>
 
 <body>
   <nav class="navbar navbar-dark fixed-top">
     <div class="topnav-left"> 
       <button onclick="openNav()" class="btn bmd-btn-icon"><i class="material-icons">list</i></button>
-      <a class="navbar-brand" href="#">Home</a>
+      <a class="navbar-brand" href="#">Visited</a>
     </div>
 
     <div class="topnav-right"> 
@@ -23,12 +23,10 @@
   </nav>
   <div id="mainPage" class="container page-container">
 
-    
-
 
   </div>
 
-<!-- Page Menu -->
+  <!-- Page Menu -->
   <!-- https://www.w3schools.com/howto/howto_js_sidenav.asp -->
   <div id="menuSidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -39,6 +37,9 @@
     <a href="settings.html">Settings</a>
   </div>
 
+  <button id="fab" type="button" class="btn bmd-btn-fab" data-toggle="modal" data-target="#addPlaceDialog">
+    <i class="material-icons">add</i>
+  </button>
 
 
   <script src="scripts/jquery.min.js"></script>
