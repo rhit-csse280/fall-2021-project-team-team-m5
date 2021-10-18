@@ -86,3 +86,10 @@ body {
     .sidenav a {font-size: 18px;}
   }
 /* Pege Menu */
+
+#homeMap{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 60%;
+}
