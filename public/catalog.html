@@ -30,7 +30,7 @@
   <!-- https://www.w3schools.com/howto/howto_js_sidenav.asp -->
   <div id="menuSidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    <a href="index.html">Home</a>
+    <a href="home.html">Home</a>
     <a href="checklist.html">Checklist</a>
     <a href="catalog.html">Visited</a>
     <a href="friends.html">Friends</a>
@@ -70,12 +70,16 @@
               <option value="1">National Park</option>
               <option value="2">Art Museum</option>
               <option value="3">Theater</option>
+              <option value="4">Amusement Park</option>
+              <option value="5">Historical Site</option>
+              <option value="6">Zoo</option>
             </select>
           </div>
           <div id="datePicker" class="md-form md-outline input-with-post-icon datepicker">
-            <input placeholder="Select date" type="text" id="example" class="form-control">
-            <label for="datePicker">Pick a Date</label>
-            <i class="fas fa-calendar input-prefix" tabindex=0></i>
+            <!-- <input placeholder="Select date" type="text" id="example" class="form-control"> -->
+            <label for="datePicker">Date Visited</label>
+            <input type="date" id="inputDate">
+            <!-- <i class="fas fa-calendar input-prefix" tabindex=0></i> -->
           </div>
           <div class="form-group bmd-form-group">
             <label for="inputNotes" class="bmd-label-floating">Notes</label>

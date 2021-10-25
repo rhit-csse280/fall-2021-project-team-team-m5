@@ -7,14 +7,14 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
   <link rel="stylesheet" href="styles/bootstrap-material-design.min.css">
   <link rel="stylesheet" href="styles/main.css">
-  <title>Friends</title>
+  <title>Home</title>
 </head>
 
 <body>
   <nav class="navbar navbar-dark fixed-top">
     <div class="topnav-left"> 
       <button onclick="openNav()" class="btn bmd-btn-icon"><i class="material-icons">list</i></button>
-      <a class="navbar-brand" href="#">Friends</a>
+      <a class="navbar-brand" href="#">Home</a>
     </div>
 
     <div class="topnav-right"> 
@@ -23,12 +23,31 @@
   </nav>
   <div id="mainPage" class="container page-container">
 
-
+    <img id="homeMap" src="photos/test-map.png" alt="placeholder map">
     
+    <div>
+    <label for="file">Overall Progress:</label>
+    <progress id="file" value="32" max="100"> 32% </progress>
+    </div>
+    
+    <div>
+    <label for="file">National Park Progress:</label>
+    <progress id="file" value="22" max="100"> 22% </progress>
+    </div>
+
+    <div>
+    <label for="file">Amusement Park Progress:</label>
+    <progress id="file" value="66" max="100"> 66% </progress>
+    </div>
+    
+    <div>
+    <label for="file">Theatre Progress:</label>
+    <progress id="file" value="5" max="100"> 5% </progress>
+    </div>
 
   </div>
 
-  <!-- Page Menu -->
+<!-- Page Menu -->
   <!-- https://www.w3schools.com/howto/howto_js_sidenav.asp -->
   <div id="menuSidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -38,9 +57,6 @@
     <a href="friends.html">Friends</a>
     <a href="settings.html">Settings</a>
   </div>
-  
-
-
 
 
   <script src="scripts/jquery.min.js"></script>

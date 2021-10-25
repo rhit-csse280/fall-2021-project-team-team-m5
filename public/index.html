@@ -6,60 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
   <link rel="stylesheet" href="styles/bootstrap-material-design.min.css">
+  <link rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.css" >
   <link rel="stylesheet" href="styles/main.css">
-  <title>Home</title>
+  <title>IGetOut</title>
 </head>
 
 <body>
   <nav class="navbar navbar-dark fixed-top">
-    <div class="topnav-left"> 
-      <button onclick="openNav()" class="btn bmd-btn-icon"><i class="material-icons">list</i></button>
-      <a class="navbar-brand" href="#">Home</a>
-    </div>
-
-    <div class="topnav-right"> 
-      <!-- add user name and user profile photo (desktop), see figma mocks for reference -->
-    </div>
+    <a class="navbar-brand" href="#">IGetOut</a>
+    <button id="signOutButton" type="button" class="btn text-light">Sign Out</button>
+    
   </nav>
   <div id="mainPage" class="container page-container">
-
-    <img id="homeMap" src="photos/test-map.png" alt="placeholder map">
-    
-    <div>
-    <label for="file">Overall Progress:</label>
-    <progress id="file" value="32" max="100"> 32% </progress>
-    </div>
-    
-    <div>
-    <label for="file">National Park Progress:</label>
-    <progress id="file" value="22" max="100"> 22% </progress>
-    </div>
-
-    <div>
-    <label for="file">Amusement Park Progress:</label>
-    <progress id="file" value="66" max="100"> 66% </progress>
-    </div>
-    
-    <div>
-    <label for="file">Theatre Progress:</label>
-    <progress id="file" value="5" max="100"> 5% </progress>
-    </div>
+    <div id="firebaseui-auth-container"></div>
 
   </div>
-
-<!-- Page Menu -->
-  <!-- https://www.w3schools.com/howto/howto_js_sidenav.asp -->
-  <div id="menuSidenav" class="sidenav">
-    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    <a href="index.html">Home</a>
-    <a href="checklist.html">Checklist</a>
-    <a href="catalog.html">Visited</a>
-    <a href="friends.html">Friends</a>
-    <a href="settings.html">Settings</a>
-  </div>
-
-
-
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
   <script src="scripts/bootstrap-material-design.js"></script>
@@ -67,8 +28,8 @@
   <script src="/__/firebase/7.18.0/firebase-app.js"></script>
   <script src="/__/firebase/7.18.0/firebase-analytics.js"></script>
   <script src="/__/firebase/7.18.0/firebase-auth.js"></script>
-  <script src="/__/firebase/7.18.0/firebase-firestore.js"></script>
   <script src="/__/firebase/init.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.js"></script>
   <script src="scripts/main.js"></script>
 </body>
 

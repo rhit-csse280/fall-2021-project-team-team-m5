@@ -40,7 +40,7 @@ body {
 /* Visited Catalog Page */
 
 
-/* Pege Menu */
+/* Page Menu */
 /* https://www.w3schools.com/howto/howto_js_sidenav.asp */
 /* The side navigation menu */
 .sidenav {
@@ -85,7 +85,7 @@ body {
     .sidenav {padding-top: 15px;}
     .sidenav a {font-size: 18px;}
   }
-/* Pege Menu */
+/* Page Menu */
 
 #homeMap{
   display: block;
@@ -94,6 +94,7 @@ body {
   width: 60%;
 }
 
+/* Checklist */
 #checklistMap {
   display: block;
   margin-left: auto;
@@ -118,3 +119,4 @@ body {
 #checklistTabs > li > a {
   color: white;
 }
+/* Checklist */
