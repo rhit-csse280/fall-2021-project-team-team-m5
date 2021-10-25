@@ -12,12 +12,12 @@
 
 <body>
   <nav class="navbar navbar-dark fixed-top">
-    <div class="topnav-left"> 
+    <div class="topnav-left">
       <button onclick="openNav()" class="btn bmd-btn-icon"><i class="material-icons">list</i></button>
       <a class="navbar-brand" href="#">Visited</a>
     </div>
 
-    <div class="topnav-right"> 
+    <div class="topnav-right">
       <!-- add user name and user profile photo (desktop), see figma mocks for reference -->
     </div>
   </nav>
@@ -41,11 +41,62 @@
     <i class="material-icons">add</i>
   </button>
 
+  <!-- Modal -->
+  <div class="modal fade" id="addPlaceDialog" tabindex="-1" role="dialog" aria-labelledby="Add quote dialog"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Visited Place</h5>
+        </div>
+        <div class="modal-body">
+          <div class="form-group bmd-form-group">
+            <label for="inputName" class="bmd-label-floating">Name</label>
+            <input type="text" class="form-control" id="inputName">
+          </div>
+          <div class="form-group bmd-form-group">
+            <label class="my-1 mr-2" for="stateSelect">State</label>
+            <select class="custom-select my-1 mr-sm-2" id="stateSelect">
+              <option selected>Choose...</option>
+              <option value="1">Alabama</option>
+              <option value="2">Alaska</option>
+              <option value="3">Arizona</option>
+            </select>
+          </div>
+          <div class="form-group bmd-form-group">
+            <label class="my-1 mr-2" for="typeSelect">Type</label>
+            <select class="custom-select my-1 mr-sm-2" id="typeSelect">
+              <option selected>Choose...</option>
+              <option value="1">National Park</option>
+              <option value="2">Art Museum</option>
+              <option value="3">Theater</option>
+            </select>
+          </div>
+          <div id="datePicker" class="md-form md-outline input-with-post-icon datepicker">
+            <input placeholder="Select date" type="text" id="example" class="form-control">
+            <label for="datePicker">Pick a Date</label>
+            <i class="fas fa-calendar input-prefix" tabindex=0></i>
+          </div>
+          <div class="form-group bmd-form-group">
+            <label for="inputNotes" class="bmd-label-floating">Notes</label>
+            <input type="text" class="form-control" id="inputNotes">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
+          <button id="submitAddPlace" type="button" class="btn btn-primary" data-dismiss="modal">CREATE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
   <script src="scripts/bootstrap-material-design.js"></script>
-  <script>$("body").bootstrapMaterialDesign();</script>
+  <script>
+    $("body").bootstrapMaterialDesign();
+  </script>
   <script src="/__/firebase/7.18.0/firebase-app.js"></script>
   <script src="/__/firebase/7.18.0/firebase-analytics.js"></script>
   <script src="/__/firebase/7.18.0/firebase-auth.js"></script>

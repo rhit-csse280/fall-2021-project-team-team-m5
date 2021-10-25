@@ -11,7 +11,7 @@
 </head>
 
 <body>
-  <nav class="navbar navbar-dark fixed-top">
+  <nav id="checklistNavbar" class="navbar navbar-dark fixed-top">
     <div class="topnav-left"> 
       <button onclick="openNav()" class="btn bmd-btn-icon"><i class="material-icons">list</i></button>
       <a class="navbar-brand" href="#">Checklist</a>
@@ -20,10 +20,112 @@
     <div class="topnav-right"> 
       <!-- add user name and user profile photo (desktop), see figma mocks for reference -->
     </div>
+
+    
   </nav>
+
+  <ul id="checklistTabs" class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link active" href="#">All</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Natonal Parks</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Art Museums</a>
+    </li>
+  </ul>
+
   <div id="mainPage" class="container page-container">
 
+    <img id="checklistMap" src="photos/test-map.png" alt="placeholder map">
 
+    <div>
+      <label for="file">Overall Progress:</label>
+      <progress id="file" value="32" max="100"> 32% </progress>
+      </div>
+
+    <div class="accordion" id="accordionExample">
+      <div class="card">
+        <div class="card-header" id="headingOne">
+          <h2 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              Alabama
+            </button>
+          </h2>
+        </div>
+        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+          <div class="card-body">
+            
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" id="headingTwo">
+          <h2 class="mb-0">
+            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              Alaska
+            </button>
+          </h2>
+        </div>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+          <div class="card-body">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="denali">
+              <label class="form-check-label" for="denali">
+                Denali National Park
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="gatesOfTheArctic">
+              <label class="form-check-label" for="gatesOfTheArctic">
+                Gates of the Arctic National Park
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="glacier">
+              <label class="form-check-label" for="glacier">
+                Glacier National Park
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="card">
+        <div class="card-header" id="headingThree">
+          <h2 class="mb-0">
+            <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              Arizona
+            </button>
+          </h2>
+        </div>
+        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+          <div class="card-body">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="grandCanyon">
+              <label class="form-check-label" for="grandCanyon">
+                Grand Canyon National Park
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="petrifiedForest">
+              <label class="form-check-label" for="petrifiedForest">
+                Petrified Forest National Park
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="saguaro">
+              <label class="form-check-label" for="saguaro">
+                Saguaro National Park
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     
 
   </div>
