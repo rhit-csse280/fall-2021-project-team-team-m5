@@ -27,6 +27,83 @@ rhit.ClassName = class {
 	}
 }
 
+// From: https://stackoverflow.com/questions/494143/creating-a-new-dom-element-from-an-html-string-using-built-in-dom-methods-or-pro/35385518#35385518
+function htmlToElement(html) {
+	var template = document.createElement('template');
+	html = html.trim();
+	template.innerHTML = html;
+	return template.content.firstChild;
+}
+
+rhit.VisitedListController = class {
+	constructor() {
+
+		document.querySelector("#submitAddPlace").addEventListener("click", (event) => {
+			const name = document.querySelector("#inputName").value;
+			const state = document.querySelector("#stateSelect").value;
+			const type = document.querySelector("#typeSelect").value;
+			const dateVisited = document.querySelector("#inputDate").value;
+			const notes = document.querySelector("#inputNotes").value;
+			// const custom = true;
+			// const visited = true; 
+			rhit.fbLocationsManager.add(name, state, type, dateVisited, notes);
+		});
+
+		$("#addPlaceDialog").on("show.bs.modal", (event) => {
+			// Pre animation
+			document.querySelector("#inputName").value = "";
+			document.querySelector("#stateSelect").value = "";
+			document.querySelector("#typeSelect").value = "";
+			document.querySelector("#inputDate").value = "";
+			document.querySelector("#inputNotes").value = "";
+		});
+		$("#addPlaceDialog").on("shown.bs.modal", (event) => {
+			// Post animation
+			document.querySelector("#inputName").focus();
+		});
+
+		// Start Listening!
+		rhit.fbLocationsManager.beginListening(this.updateList.bind(this));
+
+	}
+
+	updateList() {
+		console.log("Updating catalog!");
+
+		// TODO: updateList
+	}
+}
+
+rhit.Location = class {
+	constructor(id, name, state, type, dateVisited, notes) {
+		this.id = id;
+		this.name = name;
+		this.state = state;
+		this.type = type;
+		this.dateVisited = dateVisited;
+		this.notes = notes;
+	}
+}
+
+rhit.fbLocationsManager = class {
+	// TODO: fbLocationsManager
+
+	constructor(uid) {
+
+	}
+
+	add() {};
+
+	beginListening() {}
+
+	stopListening() {}
+
+	getLocationAtIndex() {}
+
+
+}
+
+
 // https://www.w3schools.com/howto/howto_js_sidenav.asp
 /* Set the width of the side navigation to 250px */
 function openNav() {
