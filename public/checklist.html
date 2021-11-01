@@ -21,36 +21,76 @@
       <!-- add user name and user profile photo (desktop), see figma mocks for reference -->
     </div>
 
+    <ul id="checklistTabs" class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" id="menuAllLocations" href="/checklist.html">All</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/checklist.html?type=nationalpark">Natonal Parks</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/checklist.html?type=artmuseum">Art Museums</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/checklist.html?type=amusementpark">Amusement Parks</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/checklist.html?type=theater">Theaters</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/checklist.html?type=zoo">Zoos</a>
+      </li>
+      <li class="nav-item" id="customTab">
+        <a class="nav-link" href="#">Custom</a>
+      </li>
+    </ul>
+
     
   </nav>
 
-  <ul id="checklistTabs" class="nav nav-tabs">
-    <li class="nav-item">
-      <a class="nav-link active" id="menuAllLocations" href="/checklist.html">All</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="/checklist.html?type=nationalpark">Natonal Parks</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="/checklist.html?type=artmuseum">Art Museums</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="/checklist.html?type=amusementpark">Amusement Parks</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="/checklist.html?type=theater">Theaters</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="/checklist.html?type=zoo">Zoos</a>
-    </li>
-    <li class="nav-item" id="customTab">
-      <a class="nav-link" href="#">Custom</a>
-    </li>
-  </ul>
 
   <div id="checklistPage" class="container page-container">
 
-    <img id="checklistMap" src="photos/test-map.png" alt="placeholder map">
+    <!-- <img id="checklistMap" src="photos/test-map.png" alt="placeholder map"> -->
+
+
+        <!-- Code from https://www.amcharts.com/visited_states/# -->
+  <script src="https://www.amcharts.com/lib/3/ammap.js" type="text/javascript"></script>
+  <script src="https://www.amcharts.com/lib/3/maps/js/usaHigh.js" type="text/javascript"></script>
+  <script src="https://www.amcharts.com/lib/3/themes/light.js" type="text/javascript"></script>
+
+  <div id="mapdivCH" style="width: 1000px; height: 500px;"></div>
+
+  <script type="text/javascript">
+  var map = AmCharts.makeChart("mapdivCH",{
+  type: "map",
+  theme: "light",
+  panEventsEnabled : true,
+  backgroundColor : "#535364",
+  backgroundAlpha : 1,
+  zoomControl: {
+  zoomControlEnabled : true
+  },
+  dataProvider : {
+  map : "usaHigh",
+  getAreasFromMap : true,
+  areas :
+  []
+  },
+  areasSettings : {
+  autoZoom : true,
+  color : "#B4B4B7",
+  colorSolid : "#84ADE9",
+  selectedColor : "#84ADE9",
+  outlineColor : "#666666",
+  rollOverColor : "#9EC2F7",
+  rollOverOutlineColor : "#000000"
+  }
+  });
+  </script>
+
+
+
 
     <div>
       <label for="file">Overall Progress:</label>
