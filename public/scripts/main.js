@@ -111,8 +111,8 @@ rhit.Location = class {
 	}
 }
 
-rhit.fbLocationsManager = class {
-	// TODO: fbLocationsManager
+rhit.FbLocationsManager = class {
+	// TODO: FbLocationsManager
 
 	constructor(uid) {
 		this._uid = uid;
@@ -180,7 +180,7 @@ function closeNav() {
 rhit.main = function () {
 	console.log("Ready");
 
-	new rhit.LoginPageController();
+	rhit.initializePage();
 
 };
 
@@ -198,6 +198,29 @@ rhit.startFirebaseUI = function(){
 	const ui = new firebaseui.auth.AuthUI(firebase.auth());
 	ui.start('#firebaseui-auth-container', uiConfig);
 }
+
+rhit.initializePage = () => {
+	const urlParams = new URLSearchParams(window.location.search);
+	if (document.querySelector("#checklistPage")) {
+		console.log("You are on the checklist page.");
+		const uid = urlParams.get("uid");
+		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
+		new rhit.ChecklistPageController();
+	}
+	// if (document.querySelector("#detailPage")) {
+	// 	console.log("You are on the detail page.");
+	// 	const movieQuoteId = urlParams.get("id");
+	// 	if (!movieQuoteId) {
+	// 		window.location.href = "/";
+	// 	}
+	// 	rhit.fbSingleQuoteManager = new rhit.FbSingleQuoteManager(movieQuoteId);
+	// 	new rhit.DetailPageController();
+	// }
+	if (document.querySelector("#mainPage")) {
+		console.log("You are on the login page.");
+		new rhit.LoginPageController();
+	}
+};
 
 rhit.FbSingleLocation = class {
 	constructor(locationId) {
