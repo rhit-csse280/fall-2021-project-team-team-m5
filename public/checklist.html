@@ -26,29 +26,29 @@
 
   <ul id="checklistTabs" class="nav nav-tabs">
     <li class="nav-item">
-      <a class="nav-link active" href="#">All</a>
+      <a class="nav-link active" id="menuAllLocations" href="/checklist.html">All</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="#">Natonal Parks</a>
+      <a class="nav-link" href="/checklist.html?type=nationalpark">Natonal Parks</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="#">Art Museums</a>
+      <a class="nav-link" href="/checklist.html?type=artmuseum">Art Museums</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="#">Amusement Parks</a>
+      <a class="nav-link" href="/checklist.html?type=amusementpark">Amusement Parks</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="#">Theaters</a>
+      <a class="nav-link" href="/checklist.html?type=theater">Theaters</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="#">Zoos</a>
+      <a class="nav-link" href="/checklist.html?type=zoo">Zoos</a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item" id="customTab">
       <a class="nav-link" href="#">Custom</a>
     </li>
   </ul>
 
-  <div id="mainPage" class="container page-container">
+  <div id="checklistPage" class="container page-container">
 
     <img id="checklistMap" src="photos/test-map.png" alt="placeholder map">
 
@@ -67,13 +67,14 @@
           </h2>
         </div>
         <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-          <div class="card-body">
-            <div class="form-check">
+          <div class="card-body" id="locationContainer">
+
+            <!-- <div class="form-check">
               <input class="form-check-input" type="checkbox" value="" id="alzoo">
               <label class="form-check-label" for="alzoo">
                 Alabama Gulf Coast Zoo
               </label>
-            </div>
+            </div> -->
             
           </div>
         </div>
@@ -143,132 +144,6 @@
           </div>
         </div>
       </div>
-
-      <!-- <div class="card">
-        <div class="card-header" id="headingOne">
-          <h2 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              California
-            </button>
-          </h2>
-        </div>
-        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-          <div class="card-body"> 
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header" id="headingOne">
-          <h2 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              Colorado
-            </button>
-          </h2>
-        </div>
-        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-          <div class="card-body"> 
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header" id="headingOne">
-          <h2 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              Florida
-            </button>
-          </h2>
-        </div>
-        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-          <div class="card-body"> 
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header" id="headingOne">
-          <h2 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              Hawaii
-            </button>
-          </h2>
-        </div>
-        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-          <div class="card-body"> 
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header" id="headingOne">
-          <h2 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              Idaho
-            </button>
-          </h2>
-        </div>
-        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-          <div class="card-body"> 
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header" id="headingOne">
-          <h2 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              Illinois
-            </button>
-          </h2>
-        </div>
-        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-          <div class="card-body"> 
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header" id="headingOne">
-          <h2 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              Indiana
-            </button>
-          </h2>
-        </div>
-        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-          <div class="card-body"> 
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header" id="headingOne">
-          <h2 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              Iowa
-            </button>
-          </h2>
-        </div>
-        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-          <div class="card-body"> 
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header" id="headingOne">
-          <h2 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              Kentucky
-            </button>
-          </h2>
-        </div>
-        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-          <div class="card-body"> 
-          </div>
-        </div>
-      </div> -->
 
       
     </div>

@@ -1,6 +1,6 @@
 var rhit = rhit || {};
 
-rhit.FB_COLLECTION_MOVIEQUOTE = "Locations";
+rhit.FB_COLLECTION_LOCATION = "Locations";
 rhit.FB_KEY_NAME = "name";
 rhit.FB_KEY_TYPE = "type";
 rhit.FB_KEY_STATE = "state";
@@ -9,23 +9,9 @@ rhit.FB_KEY_DATE_VISITED = "dateVisited";
 rhit.FB_KEY_NOTE = "note";
 rhit.FB_KEY_AUTHOR = "author";
 
-/** globals */
-rhit.variableName = "";
-
-/** function and class syntax examples */
-rhit.functionName = function () {
-	/** function body */
-};
-
-rhit.ClassName = class {
-	constructor() {
-
-	}
-
-	methodName() {
-
-	}
-}
+rhit.fbLocationsManager = null;
+rhit.fbSingleLocationManager = null;
+rhit.fbAuthManager = null;
 
 // From: https://stackoverflow.com/questions/494143/creating-a-new-dom-element-from-an-html-string-using-built-in-dom-methods-or-pro/35385518#35385518
 function htmlToElement(html) {
@@ -33,6 +19,45 @@ function htmlToElement(html) {
 	html = html.trim();
 	template.innerHTML = html;
 	return template.content.firstChild;
+}
+
+rhit.CheckListController = class {
+	constructor() {
+
+		document.querySelector("#customTag").addEventListener("click", (event) => {
+			window.location.href =`/checklist.html?uid=${uid}`;
+		});
+
+		//Start listening
+		rhit.fbLocationsManager.beginListening(this.updateCheckList.bind(this));
+	}
+
+	updateCheckList(){
+
+		//make a new quoteListContainer
+		const newList = htmlToElement('<div id="locationContainer"></div>');
+
+		//Fill qlc with quote cards using a loop
+		for(let i=0; i<rhit.fbLocationsManager.length; i++){
+			const mq = rhit.fbLocationsManager.getLocationAtIndex(i);
+			const newCard = this._createCard(mq);
+
+			newCard.onclick = (event)=>{
+				window.location.href = `/location.html?id=${mq.id}`;
+			};
+			newList.appendChild(newCard);
+		}
+
+	}
+
+	_createCard(clLocation){
+	  return htmlToElement(`<div class="form-check">
+	  <input class="form-check-input" type="checkbox" value="" id=${clLocation.id}>
+	  <label class="form-check-label" for=${clLocation.id}>
+		${clLocation.name}
+	  </label>
+	</div>`)
+	}
 }
 
 rhit.VisitedListController = class {
@@ -75,13 +100,14 @@ rhit.VisitedListController = class {
 }
 
 rhit.Location = class {
-	constructor(id, name, state, type, dateVisited, notes) {
+	constructor(id, name, state, type, dateVisited, notes, author) {
 		this.id = id;
 		this.name = name;
 		this.state = state;
 		this.type = type;
 		this.dateVisited = dateVisited;
 		this.notes = notes;
+		this.author = author;
 	}
 }
 
@@ -89,16 +115,49 @@ rhit.fbLocationsManager = class {
 	// TODO: fbLocationsManager
 
 	constructor(uid) {
-
+		this._uid = uid;
+		this._documentSnapshots = [];
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_LOCATION);
+		this._unsubscribe = null;
 	}
 
-	add() {};
+	// Add a new document with a generated id.
+	add(name, state, type, dateVisited, note) {
+		this._ref.add({
+			[rhit.FB_KEY_NAME]: name,
+			[rhit.FB_KEY_TYPE]: type,
+			[rhit.FB_KEY_STATE]: state,
+			[rhit.FB_KEY_DATE_VISITED]: dateVisited,
+			[rhit.FB_KEY_NOTE]: note,
+			[rhit.FB_KEY_AUTHOR]: uid,
+		})
+		.then((docRef) => {
+			console.log("Document written with ID: ", docRef.id);
+		})
+		.catch((error) => {
+			console.error("Error adding document: ", error);
+		});
+	};
 
-	beginListening() {}
+	beginListening() {
+	}
 
-	stopListening() {}
+	stopListening() {
+		this._unsubscribe();
+	}
 
-	getLocationAtIndex() {}
+	getLocationAtIndex(index) {
+		const docSnapshot =this._documentSnapshots[index];
+		const mq = new rhit.Location(docSnapshot.id,
+			docSnapshot.get(rhit.FB_KEY_NAME),
+			docSnapshot.get(rhit.FB_KEY_STATE),
+			docSnapshot.get(rhit.FB_KEY_TYPE),
+			docSnapshot.get(rhit.FB_KEY_DATE_VISITED),
+			docSnapshot.get(rhit.FB_KEY_NOTE),
+			docSnapshot.get(rhit.FB_KEY_AUTHOR),
+		);
+		return mq;
+	}
 
 
 }
@@ -121,38 +180,10 @@ function closeNav() {
 rhit.main = function () {
 	console.log("Ready");
 
-	firebase.auth().onAuthStateChanged((user) => {
-		if(user){
-			const displayName=user.displayName;
-			const email=user.email;
-			const photoURL=user.photoURL;
-			const phoneNumber = user.phoneNumber;
-			const isAnonymous =user.isAnonymous ;
-			const uid=user.uid;
-			console.log("User is signed in ", uid);
-			console.log('displayName :>> ', displayName);
-			console.log('email :>> ', email);
-			console.log('photoURL :>> ', photoURL);
-			console.log('phoneNumber :>> ', phoneNumber);
-			console.log('isAnonymous :>> ', isAnonymous);
-			console.log('uid :>> ', uid);
-		} else{
-			console.log("There is no user signed in!");
-		}
-	});
+	new rhit.LoginPageController();
 
-	document.querySelector("#signOutButton").onclick = (event) => {
-		console.log(`Sign out`);
-		firebase.auth().signOut().then(function (){
-			console.log("You are now signed out.");
-		}).catch(function (error){
-			console.log("Sign out error.");
-		});
-		location.href='index.html'
-	};
-
-	rhit.startFirebaseUI();
 };
+
 
 rhit.startFirebaseUI = function(){
 	var uiConfig = {
@@ -167,5 +198,93 @@ rhit.startFirebaseUI = function(){
 	const ui = new firebaseui.auth.AuthUI(firebase.auth());
 	ui.start('#firebaseui-auth-container', uiConfig);
 }
+
+rhit.FbSingleLocation = class {
+	constructor(locationId) {
+	  this._documentSnapshot = {};
+	  this._unsubscribe = null;
+	  this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_LOCATION).doc(locationId);
+	}
+	beginListening(changeListener) {
+
+		this._unsubscribe = this._ref.onSnapshot((doc) => {
+			if (doc.exists) {
+				console.log("Document data:", doc.data());
+				this._documentSnapshot=doc;
+				changeListener();
+			} else {
+				console.log("No such document!");
+			}
+		});
+	}
+
+	stopListening() {
+	  this._unsubscribe();
+	}
+	update(name, state, type, dateVisited, note) {
+		this._ref.update({
+			[rhit.FB_KEY_NAME]: name,
+			[rhit.FB_KEY_TYPE]: type,
+			[rhit.FB_KEY_STATE]: state,
+			[rhit.FB_KEY_DATE_VISITED]: dateVisited,
+			[rhit.FB_KEY_NOTE]: note,
+
+		})
+		.then(() => {
+			console.log("Document successfully updated");
+		})
+		.catch((error) => {
+			console.error("Error adding document: ", error);
+		});
+	}
+
+	delete() {
+		return this._ref.delete();
+	}
+
+	get name(){ return this._documentSnapshot.get(rhit.FB_KEY_NAME); }
+	get type(){ return this._documentSnapshot.get(rhit.FB_KEY_TYPE); }
+	get state(){ return this._documentSnapshot.get(rhit.FB_KEY_STATE); }
+	get dateVisited(){ return this._documentSnapshot.get(rhit.FB_KEY_DATE_VISITED); }
+	get author(){ return this._documentSnapshot.get(rhit.FB_KEY_AUTHOR); }
+}
+
+rhit.LoginPageController = class {
+	constructor() {
+
+		firebase.auth().onAuthStateChanged((user) => {
+			if(user){
+				const displayName=user.displayName;
+				const email=user.email;
+				const photoURL=user.photoURL;
+				const phoneNumber = user.phoneNumber;
+				const isAnonymous =user.isAnonymous ;
+				const uid=user.uid;
+				console.log("User is signed in ", uid);
+				console.log('displayName :>> ', displayName);
+				console.log('email :>> ', email);
+				console.log('photoURL :>> ', photoURL);
+				console.log('phoneNumber :>> ', phoneNumber);
+				console.log('isAnonymous :>> ', isAnonymous);
+				console.log('uid :>> ', uid);
+			} else{
+				console.log("There is no user signed in!");
+			}
+		});
+	
+		document.querySelector("#signOutButton").onclick = (event) => {
+			console.log(`Sign out`);
+			firebase.auth().signOut().then(function (){
+				console.log("You are now signed out.");
+			}).catch(function (error){
+				console.log("Sign out error.");
+			});
+			location.href='index.html'
+		};
+		rhit.startFirebaseUI();
+	}
+}
+
+
 
 rhit.main();
