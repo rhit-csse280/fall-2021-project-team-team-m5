@@ -5,6 +5,7 @@ rhit.FB_KEY_NAME = "name";
 rhit.FB_KEY_TYPE = "type";
 rhit.FB_KEY_STATE = "state";
 rhit.FB_KEY_CUSTOM = "custom";
+rhit.FB_KEY_VISITED = "visited";
 rhit.FB_KEY_DATE_VISITED = "dateVisited";
 rhit.FB_KEY_NOTE = "note";
 rhit.FB_KEY_AUTHOR = "author";
@@ -12,6 +13,9 @@ rhit.FB_KEY_AUTHOR = "author";
 rhit.fbLocationsManager = null;
 rhit.fbSingleLocationManager = null;
 rhit.fbAuthManager = null;
+
+let statesArray = ["Alabama", "Alaska", "Arizona"];
+let typesArray = ["National Park", "Art Museum", "Theater", "Amusement Park", "Historical Site", "Zoo"]
 
 // From: https://stackoverflow.com/questions/494143/creating-a-new-dom-element-from-an-html-string-using-built-in-dom-methods-or-pro/35385518#35385518
 function htmlToElement(html) {
@@ -65,13 +69,13 @@ rhit.CatalogListController = class {
 
 		document.querySelector("#submitAddPlace").addEventListener("click", (event) => {
 			const name = document.querySelector("#inputName").value;
-			const state = document.querySelector("#stateSelect").value;
-			const type = document.querySelector("#typeSelect").value;
+			const state = statesArray[document.querySelector("#stateSelect").value-1];
+			const type = typesArray[document.querySelector("#typeSelect").value-1];
 			const dateVisited = document.querySelector("#inputDate").value;
 			const notes = document.querySelector("#inputNotes").value;
-			// const custom = true;
-			// const visited = true; 
-			rhit.fbLocationsManager.add(name, state, type, dateVisited, notes);
+			const custom = true;
+			const visited = true; 
+			rhit.fbLocationsManager.add(name, state, type, dateVisited, notes, custom, visited);
 		});
 
 		$("#addPlaceDialog").on("show.bs.modal", (event) => {
@@ -129,13 +133,15 @@ rhit.CatalogListController = class {
 }
 
 rhit.Location = class {
-	constructor(id, name, state, type, dateVisited, notes, author) {
+	constructor(id, name, state, type, dateVisited, notes, custom, visited, author) {
 		this.id = id;
 		this.name = name;
 		this.state = state;
 		this.type = type;
 		this.dateVisited = dateVisited;
 		this.notes = notes;
+		this.custom = custom;
+		this.visited = visited;
 		this.author = author;
 	}
 }
@@ -151,14 +157,16 @@ rhit.FbLocationsManager = class {
 	}
 
 	// Add a new document with a generated id.
-	add(name, state, type, dateVisited, note) {
+	add(name, state, type, dateVisited, note, custom, visited) {
 		this._ref.add({
 				[rhit.FB_KEY_NAME]: name,
 				[rhit.FB_KEY_TYPE]: type,
 				[rhit.FB_KEY_STATE]: state,
 				[rhit.FB_KEY_DATE_VISITED]: dateVisited,
 				[rhit.FB_KEY_NOTE]: note,
-				[rhit.FB_KEY_AUTHOR]: uid,
+				[rhit.FB_KEY_CUSTOM]: custom,
+				[rhit.FB_KEY_VISITED]: visited,
+				// [rhit.FB_KEY_AUTHOR]: this.uid,
 			})
 			.then((docRef) => {
 				console.log("Document written with ID: ", docRef.id);
@@ -196,6 +204,8 @@ rhit.FbLocationsManager = class {
 			docSnapshot.get(rhit.FB_KEY_TYPE),
 			docSnapshot.get(rhit.FB_KEY_DATE_VISITED),
 			docSnapshot.get(rhit.FB_KEY_NOTE),
+			docSnapshot.get(rhit.FB_KEY_CUSTOM),
+			docSnapshot.get(rhit.FB_KEY_VISITED),
 			docSnapshot.get(rhit.FB_KEY_AUTHOR),
 		);
 		return mq;
