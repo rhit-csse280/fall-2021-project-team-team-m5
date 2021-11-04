@@ -1,6 +1,6 @@
 var rhit = rhit || {};
 
-rhit.FB_COLLECTION_LOCATION = "Locations";
+rhit.FB_COLLECTION_LOCATION = "locations";
 rhit.FB_KEY_NAME = "name";
 rhit.FB_KEY_TYPE = "type";
 rhit.FB_KEY_STATE = "state";
@@ -25,24 +25,24 @@ rhit.CheckListController = class {
 	constructor() {
 
 		document.querySelector("#customTag").addEventListener("click", (event) => {
-			window.location.href =`/checklist.html?uid=${uid}`;
+			window.location.href = `/checklist.html?uid=${uid}`;
 		});
 
 		//Start listening
 		rhit.fbLocationsManager.beginListening(this.updateCheckList.bind(this));
 	}
 
-	updateCheckList(){
+	updateCheckList() {
 
 		//make a new quoteListContainer
 		const newList = htmlToElement('<div id="locationContainer"></div>');
 
 		//Fill qlc with quote cards using a loop
-		for(let i=0; i<rhit.fbLocationsManager.length; i++){
+		for (let i = 0; i < rhit.fbLocationsManager.length; i++) {
 			const mq = rhit.fbLocationsManager.getLocationAtIndex(i);
 			const newCard = this._createCard(mq);
 
-			newCard.onclick = (event)=>{
+			newCard.onclick = (event) => {
 				window.location.href = `/location.html?id=${mq.id}`;
 			};
 			newList.appendChild(newCard);
@@ -50,8 +50,8 @@ rhit.CheckListController = class {
 
 	}
 
-	_createCard(clLocation){
-	  return htmlToElement(`<div class="form-check">
+	_createCard(clLocation) {
+		return htmlToElement(`<div class="form-check">
 	  <input class="form-check-input" type="checkbox" value="" id=${clLocation.id}>
 	  <label class="form-check-label" for=${clLocation.id}>
 		${clLocation.name}
@@ -60,7 +60,7 @@ rhit.CheckListController = class {
 	}
 }
 
-rhit.VisitedListController = class {
+rhit.CatalogListController = class {
 	constructor() {
 
 		document.querySelector("#submitAddPlace").addEventListener("click", (event) => {
@@ -93,9 +93,38 @@ rhit.VisitedListController = class {
 	}
 
 	updateList() {
-		console.log("Updating catalog!");
-
 		// TODO: updateList
+		console.log("Updating catalog!");
+		console.log(`Num locations = ${rhit.fbLocationsManager.length}`);
+		console.log("Example quote = ", rhit.fbLocationsManager.getLocationAtIndex(0));
+		
+		// Make a new catalogPage container
+		const newList = htmlToElement('<div id="catalogPage" class="container page-container"></div>');
+		// Fill the catalogPage container with location cards using a loop
+		for (let i = 0; i < rhit.fbLocationsManager.length; i++) {
+			const loc = rhit.fbLocationsManager.getLocationAtIndex(i);
+			const newCard = this._createCard(loc);
+			newCard.onclick = (event) => {
+				window.location.href = `/location.html?id=${loc.id}`;
+			};
+			newList.appendChild(newCard);
+		}
+		
+		// Remove the old catalogPage container
+		const oldList = document.querySelector("#catalogPage");
+		oldList.removeAttribute("id");
+		oldList.hidden = true;
+		// Put in the new catalogPage container
+		oldList.parentElement.appendChild(newList);
+	}
+
+	_createCard(location) {
+		return htmlToElement(`<div class="card">
+        <div class="card-body">
+          <h5 class="card-title">${location.name}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">${location.state}</h6>
+        </div>
+      </div>`);
 	}
 }
 
@@ -124,30 +153,43 @@ rhit.FbLocationsManager = class {
 	// Add a new document with a generated id.
 	add(name, state, type, dateVisited, note) {
 		this._ref.add({
-			[rhit.FB_KEY_NAME]: name,
-			[rhit.FB_KEY_TYPE]: type,
-			[rhit.FB_KEY_STATE]: state,
-			[rhit.FB_KEY_DATE_VISITED]: dateVisited,
-			[rhit.FB_KEY_NOTE]: note,
-			[rhit.FB_KEY_AUTHOR]: uid,
-		})
-		.then((docRef) => {
-			console.log("Document written with ID: ", docRef.id);
-		})
-		.catch((error) => {
-			console.error("Error adding document: ", error);
-		});
+				[rhit.FB_KEY_NAME]: name,
+				[rhit.FB_KEY_TYPE]: type,
+				[rhit.FB_KEY_STATE]: state,
+				[rhit.FB_KEY_DATE_VISITED]: dateVisited,
+				[rhit.FB_KEY_NOTE]: note,
+				[rhit.FB_KEY_AUTHOR]: uid,
+			})
+			.then((docRef) => {
+				console.log("Document written with ID: ", docRef.id);
+			})
+			.catch((error) => {
+				console.error("Error adding document: ", error);
+			});
 	};
 
-	beginListening() {
+	beginListening(changeListener) {
+		let query = this._ref.orderBy(rhit.FB_KEY_DATE_VISITED, "desc");
+		if (this._uid) {
+			query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
+		}
+		this._unsubscribe = query.onSnapshot((querySnapshot) => {
+			console.log("Location update!");
+			this._documentSnapshots = querySnapshot.docs;
+			changeListener();
+		});
 	}
 
 	stopListening() {
 		this._unsubscribe();
 	}
 
+	get length() {
+		return this._documentSnapshots.length;
+	}
+
 	getLocationAtIndex(index) {
-		const docSnapshot =this._documentSnapshots[index];
+		const docSnapshot = this._documentSnapshots[index];
 		const mq = new rhit.Location(docSnapshot.id,
 			docSnapshot.get(rhit.FB_KEY_NAME),
 			docSnapshot.get(rhit.FB_KEY_STATE),
@@ -166,12 +208,12 @@ rhit.FbLocationsManager = class {
 // https://www.w3schools.com/howto/howto_js_sidenav.asp
 /* Set the width of the side navigation to 250px */
 function openNav() {
-  document.getElementById("menuSidenav").style.width = "250px";
+	document.getElementById("menuSidenav").style.width = "250px";
 }
 
 /* Set the width of the side navigation to 0 */
 function closeNav() {
-  document.getElementById("menuSidenav").style.width = "0";
+	document.getElementById("menuSidenav").style.width = "0";
 }
 
 
@@ -185,7 +227,7 @@ rhit.main = function () {
 };
 
 
-rhit.startFirebaseUI = function(){
+rhit.startFirebaseUI = function () {
 	var uiConfig = {
 		signInSuccessUrl: 'home.html',
 		signInOptions: [
@@ -207,6 +249,12 @@ rhit.initializePage = () => {
 		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
 		new rhit.ChecklistPageController();
 	}
+	if (document.querySelector("#catalogPage")) {
+		console.log("You are on the checklist page.");
+		const uid = urlParams.get("uid");
+		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
+		new rhit.CatalogListController();
+	}
 	// if (document.querySelector("#detailPage")) {
 	// 	console.log("You are on the detail page.");
 	// 	const movieQuoteId = urlParams.get("id");
@@ -224,16 +272,16 @@ rhit.initializePage = () => {
 
 rhit.FbSingleLocation = class {
 	constructor(locationId) {
-	  this._documentSnapshot = {};
-	  this._unsubscribe = null;
-	  this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_LOCATION).doc(locationId);
+		this._documentSnapshot = {};
+		this._unsubscribe = null;
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_LOCATION).doc(locationId);
 	}
 	beginListening(changeListener) {
 
 		this._unsubscribe = this._ref.onSnapshot((doc) => {
 			if (doc.exists) {
 				console.log("Document data:", doc.data());
-				this._documentSnapshot=doc;
+				this._documentSnapshot = doc;
 				changeListener();
 			} else {
 				console.log("No such document!");
@@ -242,47 +290,57 @@ rhit.FbSingleLocation = class {
 	}
 
 	stopListening() {
-	  this._unsubscribe();
+		this._unsubscribe();
 	}
 	update(name, state, type, dateVisited, note) {
 		this._ref.update({
-			[rhit.FB_KEY_NAME]: name,
-			[rhit.FB_KEY_TYPE]: type,
-			[rhit.FB_KEY_STATE]: state,
-			[rhit.FB_KEY_DATE_VISITED]: dateVisited,
-			[rhit.FB_KEY_NOTE]: note,
+				[rhit.FB_KEY_NAME]: name,
+				[rhit.FB_KEY_TYPE]: type,
+				[rhit.FB_KEY_STATE]: state,
+				[rhit.FB_KEY_DATE_VISITED]: dateVisited,
+				[rhit.FB_KEY_NOTE]: note,
 
-		})
-		.then(() => {
-			console.log("Document successfully updated");
-		})
-		.catch((error) => {
-			console.error("Error adding document: ", error);
-		});
+			})
+			.then(() => {
+				console.log("Document successfully updated");
+			})
+			.catch((error) => {
+				console.error("Error adding document: ", error);
+			});
 	}
 
 	delete() {
 		return this._ref.delete();
 	}
 
-	get name(){ return this._documentSnapshot.get(rhit.FB_KEY_NAME); }
-	get type(){ return this._documentSnapshot.get(rhit.FB_KEY_TYPE); }
-	get state(){ return this._documentSnapshot.get(rhit.FB_KEY_STATE); }
-	get dateVisited(){ return this._documentSnapshot.get(rhit.FB_KEY_DATE_VISITED); }
-	get author(){ return this._documentSnapshot.get(rhit.FB_KEY_AUTHOR); }
+	get name() {
+		return this._documentSnapshot.get(rhit.FB_KEY_NAME);
+	}
+	get type() {
+		return this._documentSnapshot.get(rhit.FB_KEY_TYPE);
+	}
+	get state() {
+		return this._documentSnapshot.get(rhit.FB_KEY_STATE);
+	}
+	get dateVisited() {
+		return this._documentSnapshot.get(rhit.FB_KEY_DATE_VISITED);
+	}
+	get author() {
+		return this._documentSnapshot.get(rhit.FB_KEY_AUTHOR);
+	}
 }
 
 rhit.LoginPageController = class {
 	constructor() {
 
 		firebase.auth().onAuthStateChanged((user) => {
-			if(user){
-				const displayName=user.displayName;
-				const email=user.email;
-				const photoURL=user.photoURL;
+			if (user) {
+				const displayName = user.displayName;
+				const email = user.email;
+				const photoURL = user.photoURL;
 				const phoneNumber = user.phoneNumber;
-				const isAnonymous =user.isAnonymous ;
-				const uid=user.uid;
+				const isAnonymous = user.isAnonymous;
+				const uid = user.uid;
 				console.log("User is signed in ", uid);
 				console.log('displayName :>> ', displayName);
 				console.log('email :>> ', email);
@@ -290,19 +348,19 @@ rhit.LoginPageController = class {
 				console.log('phoneNumber :>> ', phoneNumber);
 				console.log('isAnonymous :>> ', isAnonymous);
 				console.log('uid :>> ', uid);
-			} else{
+			} else {
 				console.log("There is no user signed in!");
 			}
 		});
-	
+
 		document.querySelector("#signOutButton").onclick = (event) => {
 			console.log(`Sign out`);
-			firebase.auth().signOut().then(function (){
+			firebase.auth().signOut().then(function () {
 				console.log("You are now signed out.");
-			}).catch(function (error){
+			}).catch(function (error) {
 				console.log("Sign out error.");
 			});
-			location.href='index.html'
+			location.href = 'index.html'
 		};
 		rhit.startFirebaseUI();
 	}
