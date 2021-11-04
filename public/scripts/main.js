@@ -21,10 +21,10 @@ function htmlToElement(html) {
 	return template.content.firstChild;
 }
 
-rhit.CheckListController = class {
+rhit.ChecklistController = class {
 	constructor() {
 
-		document.querySelector("#customTag").addEventListener("click", (event) => {
+		document.querySelector("#customTab").addEventListener("click", (event) => {
 			window.location.href = `/checklist.html?uid=${uid}`;
 		});
 
@@ -247,7 +247,7 @@ rhit.initializePage = () => {
 		console.log("You are on the checklist page.");
 		const uid = urlParams.get("uid");
 		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
-		new rhit.ChecklistPageController();
+		new rhit.ChecklistController();
 	}
 	if (document.querySelector("#catalogPage")) {
 		console.log("You are on the checklist page.");
@@ -264,7 +264,7 @@ rhit.initializePage = () => {
 	// 	rhit.fbSingleQuoteManager = new rhit.FbSingleQuoteManager(movieQuoteId);
 	// 	new rhit.DetailPageController();
 	// }
-	if (document.querySelector("#mainPage")) {
+	if (document.querySelector("#loginPage")) {
 		console.log("You are on the login page.");
 		new rhit.LoginPageController();
 	}
