@@ -9,12 +9,73 @@ rhit.FB_KEY_VISITED = "visited";
 rhit.FB_KEY_DATE_VISITED = "dateVisited";
 rhit.FB_KEY_NOTE = "note";
 rhit.FB_KEY_AUTHOR = "author";
-
 rhit.fbLocationsManager = null;
 rhit.fbSingleLocationManager = null;
+
+rhit.FB_COLLECTION_USER = "users";
+rhit.FB_KEY_USERNAME = "username";
+rhit.FB_KEY_LOCATIONS_VISITED = "locationsVisited";
+rhit.FB_KEY_FRIEND_IDS= "friendIds";
+rhit.fbUsersManager = null;
+rhit.fbSingleUserManager = null;
+
 rhit.fbAuthManager = null;
 
-let statesArray = ["Alabama", "Alaska", "Arizona"];
+let statesArray = ["Alaska",
+                  "Alabama",
+                  "Arkansas",
+                  "American Samoa",
+                  "Arizona",
+                  "California",
+                  "Colorado",
+                  "Connecticut",
+                  "District of Columbia",
+                  "Delaware",
+                  "Florida",
+                  "Georgia",
+                  "Guam",
+                  "Hawaii",
+                  "Iowa",
+                  "Idaho",
+                  "Illinois",
+                  "Indiana",
+                  "Kansas",
+                  "Kentucky",
+                  "Louisiana",
+                  "Massachusetts",
+                  "Maryland",
+                  "Maine",
+                  "Michigan",
+                  "Minnesota",
+                  "Missouri",
+                  "Mississippi",
+                  "Montana",
+                  "North Carolina",
+                  " North Dakota",
+                  "Nebraska",
+                  "New Hampshire",
+                  "New Jersey",
+                  "New Mexico",
+                  "Nevada",
+                  "New York",
+                  "Ohio",
+                  "Oklahoma",
+                  "Oregon",
+                  "Pennsylvania",
+                  "Puerto Rico",
+                  "Rhode Island",
+                  "South Carolina",
+                  "South Dakota",
+                  "Tennessee",
+                  "Texas",
+                  "Utah",
+                  "Virginia",
+                  "Virgin Islands",
+                  "Vermont",
+                  "Washington",
+                  "Wisconsin",
+                  "West Virginia",
+                  "Wyoming"];
 let typesArray = ["National Park", "Art Museum", "Theater", "Amusement Park", "Historical Site", "Zoo"]
 
 // From: https://stackoverflow.com/questions/494143/creating-a-new-dom-element-from-an-html-string-using-built-in-dom-methods-or-pro/35385518#35385518
@@ -210,75 +271,7 @@ rhit.FbLocationsManager = class {
 		);
 		return mq;
 	}
-
-
 }
-
-
-// https://www.w3schools.com/howto/howto_js_sidenav.asp
-/* Set the width of the side navigation to 250px */
-function openNav() {
-	document.getElementById("menuSidenav").style.width = "250px";
-}
-
-/* Set the width of the side navigation to 0 */
-function closeNav() {
-	document.getElementById("menuSidenav").style.width = "0";
-}
-
-
-/* Main */
-/** function and class syntax examples */
-rhit.main = function () {
-	console.log("Ready");
-
-	rhit.initializePage();
-
-};
-
-
-rhit.startFirebaseUI = function () {
-	var uiConfig = {
-		signInSuccessUrl: 'home.html',
-		signInOptions: [
-			firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-			firebase.auth.EmailAuthProvider.PROVIDER_ID,
-			firebase.auth.PhoneAuthProvider.PROVIDER_ID,
-			firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
-		],
-	};
-	const ui = new firebaseui.auth.AuthUI(firebase.auth());
-	ui.start('#firebaseui-auth-container', uiConfig);
-}
-
-rhit.initializePage = () => {
-	const urlParams = new URLSearchParams(window.location.search);
-	if (document.querySelector("#checklistPage")) {
-		console.log("You are on the checklist page.");
-		const uid = urlParams.get("uid");
-		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
-		new rhit.ChecklistController();
-	}
-	if (document.querySelector("#catalogPage")) {
-		console.log("You are on the checklist page.");
-		const uid = urlParams.get("uid");
-		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
-		new rhit.CatalogListController();
-	}
-	// if (document.querySelector("#detailPage")) {
-	// 	console.log("You are on the detail page.");
-	// 	const movieQuoteId = urlParams.get("id");
-	// 	if (!movieQuoteId) {
-	// 		window.location.href = "/";
-	// 	}
-	// 	rhit.fbSingleQuoteManager = new rhit.FbSingleQuoteManager(movieQuoteId);
-	// 	new rhit.DetailPageController();
-	// }
-	if (document.querySelector("#loginPage")) {
-		console.log("You are on the login page.");
-		new rhit.LoginPageController();
-	}
-};
 
 rhit.FbSingleLocation = class {
 	constructor(locationId) {
@@ -339,6 +332,142 @@ rhit.FbSingleLocation = class {
 		return this._documentSnapshot.get(rhit.FB_KEY_AUTHOR);
 	}
 }
+
+
+rhit.User = class {
+	constructor(uid, name, locationsVisited, friendIds) {
+		this.uid = uid;
+		this.username = name;
+		this.locationsVisited = locationsVisited;
+		this.friendIds = friendIds;
+	}
+}
+
+rhit.FbSingleUser = class {
+	constructor(userId) {
+		this._documentSnapshot = {};
+		this._unsubscribe = null;
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USER).doc(userId);
+	}
+	beginListening(changeListener) {
+
+		this._unsubscribe = this._ref.onSnapshot((doc) => {
+			if (doc.exists) {
+				console.log("Document data:", doc.data());
+				this._documentSnapshot = doc;
+				changeListener();
+			} else {
+				console.log("No such document!");
+			}
+		});
+	}
+
+	stopListening() {
+		this._unsubscribe();
+	}
+	update(name, locationsVisited, friendIds) {
+		this._ref.update({
+				[rhit.FB_KEY_USERNAME]: name,
+				[rhit.FB_KEY_LOCATIONS_VISITED]: locationsVisited,
+				[rhit.FB_KEY_FRIEND_IDS]: friendIds,
+
+			})
+			.then(() => {
+				console.log("Document successfully updated");
+			})
+			.catch((error) => {
+				console.error("Error adding document: ", error);
+			});
+	}
+
+	delete() {
+		return this._ref.delete();
+	}
+
+	get username() {
+		return this._documentSnapshot.get(rhit.FB_KEY_USERNAME);
+	}
+
+	get locationsVisited() {
+		return this._documentSnapshot.get(rhit.FB_KEY_LOCATIONS_VISITED);
+	}
+
+	get friendIds() {
+		return this._documentSnapshot.get(rhit.FB_KEY_FRIEND_IDS);
+	}
+	
+	get numFriends() {
+		return this._documentSnapshot.get(rhit.FB_KEY_FRIEND_IDS).length;
+	}
+	get numVisited() {
+		return this._documentSnapshot.get(rhit.FB_KEY_LOCATIONS_VISITED).length;
+	}
+}
+
+
+// https://www.w3schools.com/howto/howto_js_sidenav.asp
+/* Set the width of the side navigation to 250px */
+function openNav() {
+	document.getElementById("menuSidenav").style.width = "250px";
+}
+
+/* Set the width of the side navigation to 0 */
+function closeNav() {
+	document.getElementById("menuSidenav").style.width = "0";
+}
+
+
+/* Main */
+/** function and class syntax examples */
+rhit.main = function () {
+	console.log("Ready");
+
+	rhit.initializePage();
+};
+
+
+rhit.startFirebaseUI = function () {
+	var uiConfig = {
+		signInSuccessUrl: 'home.html',
+		signInOptions: [
+			firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+			firebase.auth.EmailAuthProvider.PROVIDER_ID,
+			firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+			firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
+		],
+	};
+	const ui = new firebaseui.auth.AuthUI(firebase.auth());
+	ui.start('#firebaseui-auth-container', uiConfig);
+}
+
+rhit.initializePage = () => {
+	const urlParams = new URLSearchParams(window.location.search);
+	if (document.querySelector("#checklistPage")) {
+		console.log("You are on the checklist page.");
+		const uid = urlParams.get("uid");
+		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
+		new rhit.ChecklistController();
+	}
+	if (document.querySelector("#catalogPage")) {
+		console.log("You are on the checklist page.");
+		const uid = urlParams.get("uid");
+		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
+		new rhit.CatalogListController();
+	}
+	// if (document.querySelector("#detailPage")) {
+	// 	console.log("You are on the detail page.");
+	// 	const movieQuoteId = urlParams.get("id");
+	// 	if (!movieQuoteId) {
+	// 		window.location.href = "/";
+	// 	}
+	// 	rhit.fbSingleQuoteManager = new rhit.FbSingleQuoteManager(movieQuoteId);
+	// 	new rhit.DetailPageController();
+	// }
+	if (document.querySelector("#loginPage")) {
+		console.log("You are on the login page.");
+		new rhit.LoginPageController();
+	}
+};
 
 rhit.LoginPageController = class {
 	constructor() {
