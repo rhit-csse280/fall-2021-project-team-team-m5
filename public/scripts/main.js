@@ -13,6 +13,7 @@ rhit.fbLocationsManager = null;
 rhit.fbSingleLocationManager = null;
 
 rhit.FB_COLLECTION_USER = "users";
+rhit.FB_KEY_UID = "uid";
 rhit.FB_KEY_USERNAME = "username";
 rhit.FB_KEY_LOCATIONS_VISITED = "locationsVisited";
 rhit.FB_KEY_FRIEND_IDS= "friendIds";
@@ -137,6 +138,7 @@ rhit.CatalogListController = class {
 			const custom = true;
 			const visited = true; 
 			rhit.fbLocationsManager.add(name, state, type, dateVisited, notes, custom, visited);
+			// rhit.fbUsersManager.
 		});
 
 		$("#addPlaceDialog").on("show.bs.modal", (event) => {
@@ -165,12 +167,14 @@ rhit.CatalogListController = class {
 		
 		// Make a new catalogPage container
 		const newList = htmlToElement('<div id="catalogPage" class="container page-container"></div>');
+		
 		// Fill the catalogPage container with location cards using a loop
 		for (let i = 0; i < rhit.fbLocationsManager.length; i++) {
 			const loc = rhit.fbLocationsManager.getLocationAtIndex(i);
 			const newCard = this._createCard(loc);
+
 			newCard.onclick = (event) => {
-				window.location.href = `/location.html?id=${loc.id}`;
+				window.location.href = `/locationDetail.html?id=${loc.id}`;
 			};
 			newList.appendChild(newCard);
 		}
@@ -343,7 +347,65 @@ rhit.User = class {
 	}
 }
 
-rhit.FbSingleUser = class {
+rhit.FbUsersManager = class {
+	// TODO: FbUsersManager
+
+	constructor(uid) {
+		this._uid = uid;
+		this._documentSnapshots = [];
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USER);
+		this._unsubscribe = null;
+	}
+
+	// Add a new document with a generated id.
+	add(uid, username, locationsVisited, friendIds) {
+		this._ref.add({
+				[rhit.FB_KEY_UID]: uid,
+				[rhit.FB_KEY_USERNAME]: username,
+				[rhit.FB_KEY_LOCATIONS_VISITED]: locationsVisited,
+				[rhit.FB_KEY_FRIEND_IDS]: friendIds,
+			})
+			.then((docRef) => {
+				console.log("Document written with ID: ", docRef.id);
+			})
+			.catch((error) => {
+				console.error("Error adding document: ", error);
+			});
+	};
+
+	beginListening(changeListener) {
+		// let query = this._ref.orderBy(rhit.FB_KEY_DATE_VISITED, "desc");
+		// if (this._uid) {
+		// 	query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
+		// }
+		this._unsubscribe = query.onSnapshot((querySnapshot) => {
+			// console.log("Location update!");
+			this._documentSnapshots = querySnapshot.docs;
+			changeListener();
+		});
+	}
+
+	stopListening() {
+		this._unsubscribe();
+	}
+
+	get length() {
+		return this._documentSnapshots.length;
+	}
+
+	getUserAtIndex(index) {
+		const docSnapshot = this._documentSnapshots[index];
+		const mq = new rhit.User(docSnapshot.id,
+			docSnapshot.get(rhit.FB_KEY_UID),
+			docSnapshot.get(rhit.FB_KEY_USERNAME),
+			docSnapshot.get(rhit.FB_KEY_LOCATIONS_VISITED),
+			docSnapshot.get(rhit.FB_KEY_FRIEND_IDS),
+		);
+		return mq;
+	}
+}
+
+rhit.FbSingleUserManager = class {
 	constructor(userId) {
 		this._documentSnapshot = {};
 		this._unsubscribe = null;
@@ -395,7 +457,7 @@ rhit.FbSingleUser = class {
 	get friendIds() {
 		return this._documentSnapshot.get(rhit.FB_KEY_FRIEND_IDS);
 	}
-	
+
 	get numFriends() {
 		return this._documentSnapshot.get(rhit.FB_KEY_FRIEND_IDS).length;
 	}
@@ -429,6 +491,22 @@ rhit.main = function () {
 rhit.startFirebaseUI = function () {
 	var uiConfig = {
 		signInSuccessUrl: 'home.html',
+
+		//Attempt to add users to collection
+		// //https://stackoverflow.com/questions/54138770/firestore-how-to-add-user-document-to-collection-at-sign-in-with-firebaseui
+		// callbacks: {
+		// 	signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+		// 		const userUid       = authResult.user.uid;
+		// 		const email         = authResult.user.email;
+		// 		const displayName   = authResult.user.displayName;
+		// 		const photoURL      = authResult.user.photoURL;
+		// 		const lastLoginAt   = authResult.user.lastLoginAt;
+		// 		const createdAt     = authResult.user.createdAt;
+		// 		setUser(userUid, email, displayName, photoURL, lastLoginAt, createdAt);
+		// 		return false;
+		// 	},
+		// },
+
 		signInOptions: [
 			firebase.auth.GoogleAuthProvider.PROVIDER_ID,
 			firebase.auth.EmailAuthProvider.PROVIDER_ID,
@@ -438,6 +516,21 @@ rhit.startFirebaseUI = function () {
 	};
 	const ui = new firebaseui.auth.AuthUI(firebase.auth());
 	ui.start('#firebaseui-auth-container', uiConfig);
+
+	//Attempt to add users to collection
+	// function setUser(userUid, email, displayName, photoURL, lastLoginAt, createdAt) {
+	// 	const user = {
+	// 		useruid         : userUid,
+	// 		useremail       : email,
+	// 		displayname : displayName,
+	// 		photourl        : photoURL,
+	// 		lastlogin       : lastLoginAt,
+	// 		created         : createdAt,
+	// 		locationsVisited: [],
+	// 		friendIds: []
+	// 	}
+	// 	rhit.FB_COLLECTION_USER.doc(userUid).set(user);
+	// }
 }
 
 rhit.initializePage = () => {
@@ -446,28 +539,162 @@ rhit.initializePage = () => {
 		console.log("You are on the checklist page.");
 		const uid = urlParams.get("uid");
 		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
+		rhit.fbUsersManager = new rhit.FbUsersManager(uid);
 		new rhit.ChecklistController();
 	}
 	if (document.querySelector("#catalogPage")) {
 		console.log("You are on the checklist page.");
 		const uid = urlParams.get("uid");
 		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
+		rhit.fbUsersManager = new rhit.FbUsersManager(uid);
 		new rhit.CatalogListController();
 	}
-	// if (document.querySelector("#detailPage")) {
-	// 	console.log("You are on the detail page.");
-	// 	const movieQuoteId = urlParams.get("id");
-	// 	if (!movieQuoteId) {
-	// 		window.location.href = "/";
-	// 	}
-	// 	rhit.fbSingleQuoteManager = new rhit.FbSingleQuoteManager(movieQuoteId);
-	// 	new rhit.DetailPageController();
-	// }
+	if (document.querySelector("#detailPage")) {
+		console.log("You are on the detail page.");
+		const locationId = urlParams.get("id");
+		if (!locationId) {
+			window.location.href = "/";
+		}
+		rhit.fbSingleLocationManager = new rhit.FbSingleLocationManager(locationId);
+		new rhit.DetailPageController();
+	}
 	if (document.querySelector("#loginPage")) {
 		console.log("You are on the login page.");
 		new rhit.LoginPageController();
 	}
 };
+
+rhit.DetailPageController = class {
+	constructor() {
+
+		document.querySelector("#submitEditLocation").addEventListener("click", (event)=>{
+			// console.log("You clicked submit");
+			const name = document.querySelector("#inputName").value;
+			const state = document.querySelector("#stateSelect").value;
+			const type = document.querySelector("#typeSelect").value;
+			const date = document.querySelector("#datePicker").value;
+			const note = document.querySelector("#inputNotes").value;
+
+			rhit.fbSingleLocationManager.update(name,type,state,date,note,true);
+		});
+
+		$("#editLocationDialog").on("show.bs.modal", (event) => {
+			//Pre animation
+			// console.log("dialog about to show up");
+			document.querySelector("#inputName").value =rhit.fbSingleLocationManager.name;
+			document.querySelector("#stateSelect").value =rhit.fbSingleLocationManager.state;
+			document.querySelector("#typeSelect").value =rhit.fbSingleLocationManager.type;
+			document.querySelector("#datePicker").value =rhit.fbSingleLocationManager.date;
+			document.querySelector("#inputNotes").value =rhit.fbSingleLocationManager.notes;
+		});
+
+		$("#editLocationDialog").on("shown.bs.modal", (event) => {
+			//Post animation
+			// console.log("dialog is now visible");
+			document.querySelector("#inputQuote").focus();
+		});
+
+		document.querySelector("#submitDeleteLocation").addEventListener("click", (event)=>{
+			rhit.fbSingleLocationManager.delete().then(function () {
+				console.log("Document successfully deleted");
+				window.location.href="/";
+			}).catch(function (error){
+				console.log("Error adding document: ", error);
+			});
+		});
+
+		rhit.fbSingleLocationManager.beginListening(this.updateView.bind(this));
+	}
+	updateView() { 
+		document.querySelector("#detailName").innerHTML = rhit.fbSingleLocationManager.name;
+		document.querySelector("#detailState").innerHTML = rhit.fbSingleLocationManager.state;
+		document.querySelector("#detailType").innerHTML = rhit.fbSingleLocationManager.type;
+		document.querySelector("#detailDate").innerHTML = rhit.fbSingleLocationManager.date;
+		document.querySelector("#detailNote").innerHTML = rhit.fbSingleLocationManager.notes;
+
+		if(rhit.fbSingleUserManager.locationsVisited().includes(rhit.fbSingleLocationManager)){
+			document.querySelector("#menuEdit").style.display ="flex";
+			document.querySelector("#menuDelete").style.display ="flex";
+		}
+	}
+}
+
+rhit.FbSingleLocationManager = class {
+	constructor(locId) {
+	  this._documentSnapshot = {};
+	  this._unsubscribe = null;
+	  this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_LOCATION).doc(locId);
+	//   console.log(`listening to ${this._ref.path}`);
+	}
+	beginListening(changeListener) {
+
+		this._unsubscribe = this._ref.onSnapshot((doc) => {
+			if (doc.exists) {
+				console.log("Document data:", doc.data());
+				this._documentSnapshot=doc;
+				changeListener();
+			} else {
+				// doc.data() will be undefined in this case
+				console.log("No such document!");
+				//window.location.href = "/";
+			}
+		});
+	}
+
+	stopListening() {
+	  this._unsubscribe();
+	}
+	update(name,type,state,dateVisited,note,custom,visited) {
+		this._ref.update({
+			[rhit.FB_KEY_NAME]: name,
+			[rhit.FB_KEY_TYPE]: type,
+			[rhit.FB_KEY_STATE]: state,
+			[rhit.FB_KEY_DATE_VISITED]: dateVisited,
+			[rhit.FB_KEY_NOTE]: note,
+			[rhit.FB_KEY_VISITED]: visited,
+		})
+		.then(() => {
+			console.log("Document successfully updated");
+		})
+		.catch((error) => {
+			console.error("Error adding document: ", error);
+		});
+	}
+
+	delete() {
+		return this._ref.delete();
+	}
+
+	get name(){
+		return this._documentSnapshot.get(rhit.FB_KEY_NAME);
+	}
+
+	get state(){
+		return this._documentSnapshot.get(rhit.FB_KEY_STATE);
+	}
+
+	get type(){
+		return this._documentSnapshot.get(rhit.FB_KEY_TYPE);
+	}
+
+	get dateVisited(){
+		return this._documentSnapshot.get(rhit.FB_KEY_DATE_VISITED);
+	}
+
+	get note(){
+		return this._documentSnapshot.get(rhit.FB_KEY_NOTE);
+	}
+
+	get custom(){
+		return this._documentSnapshot.get(rhit.FB_KEY_VISITED);
+	}
+
+	get visited(){
+		return this._documentSnapshot.get(rhit.FB_KEY_VISITED);
+	}
+
+}
+
 
 rhit.LoginPageController = class {
 	constructor() {
@@ -487,6 +714,18 @@ rhit.LoginPageController = class {
 				console.log('phoneNumber :>> ', phoneNumber);
 				console.log('isAnonymous :>> ', isAnonymous);
 				console.log('uid :>> ', uid);
+
+
+				//Add user to user collection if not already included
+				console.log("Check if user already exists.");
+				if(!rhit.fbUsersManager.whereEqualTo("uid", uid)){
+					console.log("User has been added.");
+					rhit.fbUsersManager.add(uid, [], []);
+				}
+				else{
+					console.log("User already exists");
+				}
+
 			} else {
 				console.log("There is no user signed in!");
 			}
@@ -504,7 +743,6 @@ rhit.LoginPageController = class {
 		rhit.startFirebaseUI();
 	}
 }
-
 
 
 rhit.main();

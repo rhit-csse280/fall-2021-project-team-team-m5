@@ -16,21 +16,27 @@
       <button onclick="openNav()" class="btn bmd-btn-icon"><i class="material-icons">list</i></button>
       <a class="navbar-brand" href="#">Location Details</a>
     </div>
+    <div class="dropdown pull-xs-right">
 
     <button class="btn bmd-btn-icon dropdown-toggle" type="button" id="lr1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="material-icons">more_vert</i>
       </button>
 
     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="lr1">
-        <button id="menuEdit" class="dropdown-item" type="button" data-toggle="modal" data-target="#editQuoteDialog">
+        <button id="menuEdit" class="dropdown-item" type="button" data-toggle="modal" data-target="#editLocationDialog">
           <i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;Edit</button>
 
-    <button id="menuDelete" class="dropdown-item" type="button" data-toggle="modal" data-target="#deleteQuoteDialog"><i
+    <button id="menuDelete" class="dropdown-item" type="button" data-toggle="modal" data-target="#deleteLocationDialog"><i
         class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;Delete</button>
-
+      </div>
   </nav>
+
   <div id="detailPage" class="container page-container">
-    
+    <h1 id="detailName"></h1>
+    <h1 id="detailState"></h1>
+    <h1 id="detailType"></h1>
+    <h1 id="detailDate"></h1>
+    <p id="detailNote"></p>
 
   </div>
 
@@ -47,7 +53,7 @@
 
 
   <!-- Modal -->
-  <div class="modal fade" id="editPlaceDialog" tabindex="-1" role="dialog" aria-labelledby="Edit location dialog"
+  <div class="modal fade" id="editLocationDialog" tabindex="-1" role="dialog" aria-labelledby="Edit location dialog"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -93,7 +99,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
-          <button id="submitEditPlace" type="button" class="btn btn-primary" data-dismiss="modal">UPDATE</button>
+          <button id="submitEditLocation" type="button" class="btn btn-primary" data-dismiss="modal">UPDATE</button>
         </div>
       </div>
     </div>
