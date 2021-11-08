@@ -16,67 +16,68 @@ rhit.FB_COLLECTION_USER = "users";
 rhit.FB_KEY_UID = "uid";
 rhit.FB_KEY_USERNAME = "username";
 rhit.FB_KEY_LOCATIONS_VISITED = "locationsVisited";
-rhit.FB_KEY_FRIEND_IDS= "friendIds";
+rhit.FB_KEY_FRIEND_IDS = "friendIds";
 rhit.fbUsersManager = null;
 rhit.fbSingleUserManager = null;
 
 rhit.fbAuthManager = null;
 
 let statesArray = ["Alaska",
-                  "Alabama",
-                  "Arkansas",
-                  "American Samoa",
-                  "Arizona",
-                  "California",
-                  "Colorado",
-                  "Connecticut",
-                  "District of Columbia",
-                  "Delaware",
-                  "Florida",
-                  "Georgia",
-                  "Guam",
-                  "Hawaii",
-                  "Iowa",
-                  "Idaho",
-                  "Illinois",
-                  "Indiana",
-                  "Kansas",
-                  "Kentucky",
-                  "Louisiana",
-                  "Massachusetts",
-                  "Maryland",
-                  "Maine",
-                  "Michigan",
-                  "Minnesota",
-                  "Missouri",
-                  "Mississippi",
-                  "Montana",
-                  "North Carolina",
-                  " North Dakota",
-                  "Nebraska",
-                  "New Hampshire",
-                  "New Jersey",
-                  "New Mexico",
-                  "Nevada",
-                  "New York",
-                  "Ohio",
-                  "Oklahoma",
-                  "Oregon",
-                  "Pennsylvania",
-                  "Puerto Rico",
-                  "Rhode Island",
-                  "South Carolina",
-                  "South Dakota",
-                  "Tennessee",
-                  "Texas",
-                  "Utah",
-                  "Virginia",
-                  "Virgin Islands",
-                  "Vermont",
-                  "Washington",
-                  "Wisconsin",
-                  "West Virginia",
-                  "Wyoming"];
+	"Alabama",
+	"Arkansas",
+	"American Samoa",
+	"Arizona",
+	"California",
+	"Colorado",
+	"Connecticut",
+	"District of Columbia",
+	"Delaware",
+	"Florida",
+	"Georgia",
+	"Guam",
+	"Hawaii",
+	"Iowa",
+	"Idaho",
+	"Illinois",
+	"Indiana",
+	"Kansas",
+	"Kentucky",
+	"Louisiana",
+	"Massachusetts",
+	"Maryland",
+	"Maine",
+	"Michigan",
+	"Minnesota",
+	"Missouri",
+	"Mississippi",
+	"Montana",
+	"North Carolina",
+	" North Dakota",
+	"Nebraska",
+	"New Hampshire",
+	"New Jersey",
+	"New Mexico",
+	"Nevada",
+	"New York",
+	"Ohio",
+	"Oklahoma",
+	"Oregon",
+	"Pennsylvania",
+	"Puerto Rico",
+	"Rhode Island",
+	"South Carolina",
+	"South Dakota",
+	"Tennessee",
+	"Texas",
+	"Utah",
+	"Virginia",
+	"Virgin Islands",
+	"Vermont",
+	"Washington",
+	"Wisconsin",
+	"West Virginia",
+	"Wyoming"
+];
 let typesArray = ["National Park", "Art Museum", "Theater", "Amusement Park", "Historical Site", "Zoo"]
 
 // From: https://stackoverflow.com/questions/494143/creating-a-new-dom-element-from-an-html-string-using-built-in-dom-methods-or-pro/35385518#35385518
@@ -131,12 +132,12 @@ rhit.CatalogListController = class {
 
 		document.querySelector("#submitAddPlace").addEventListener("click", (event) => {
 			const name = document.querySelector("#inputName").value;
-			const state = statesArray[document.querySelector("#stateSelect").value-1];
-			const type = typesArray[document.querySelector("#typeSelect").value-1];
+			const state = statesArray[document.querySelector("#stateSelect").value - 1];
+			const type = typesArray[document.querySelector("#typeSelect").value - 1];
 			const dateVisited = document.querySelector("#inputDate").value;
 			const notes = document.querySelector("#inputNotes").value;
 			const custom = true;
-			const visited = true; 
+			const visited = true;
 			rhit.fbLocationsManager.add(name, state, type, dateVisited, notes, custom, visited);
 			// rhit.fbUsersManager.
 		});
@@ -164,10 +165,10 @@ rhit.CatalogListController = class {
 		console.log("Updating catalog!");
 		console.log(`Num locations = ${rhit.fbLocationsManager.length}`);
 		console.log("Example quote = ", rhit.fbLocationsManager.getLocationAtIndex(0));
-		
+
 		// Make a new catalogPage container
 		const newList = htmlToElement('<div id="catalogPage" class="container page-container"></div>');
-		
+
 		// Fill the catalogPage container with location cards using a loop
 		for (let i = 0; i < rhit.fbLocationsManager.length; i++) {
 			const loc = rhit.fbLocationsManager.getLocationAtIndex(i);
@@ -178,7 +179,7 @@ rhit.CatalogListController = class {
 			};
 			newList.appendChild(newCard);
 		}
-		
+
 		// Remove the old catalogPage container
 		const oldList = document.querySelector("#catalogPage");
 		oldList.removeAttribute("id");
@@ -567,7 +568,7 @@ rhit.initializePage = () => {
 rhit.DetailPageController = class {
 	constructor() {
 
-		document.querySelector("#submitEditLocation").addEventListener("click", (event)=>{
+		document.querySelector("#submitEditLocation").addEventListener("click", (event) => {
 			// console.log("You clicked submit");
 			const name = document.querySelector("#inputName").value;
 			const state = document.querySelector("#stateSelect").value;
@@ -575,17 +576,17 @@ rhit.DetailPageController = class {
 			const date = document.querySelector("#datePicker").value;
 			const note = document.querySelector("#inputNotes").value;
 
-			rhit.fbSingleLocationManager.update(name,type,state,date,note,true);
+			rhit.fbSingleLocationManager.update(name, type, state, date, note, true);
 		});
 
 		$("#editLocationDialog").on("show.bs.modal", (event) => {
 			//Pre animation
 			// console.log("dialog about to show up");
-			document.querySelector("#inputName").value =rhit.fbSingleLocationManager.name;
-			document.querySelector("#stateSelect").value =rhit.fbSingleLocationManager.state;
-			document.querySelector("#typeSelect").value =rhit.fbSingleLocationManager.type;
-			document.querySelector("#datePicker").value =rhit.fbSingleLocationManager.date;
-			document.querySelector("#inputNotes").value =rhit.fbSingleLocationManager.notes;
+			document.querySelector("#inputName").value = rhit.fbSingleLocationManager.name;
+			document.querySelector("#stateSelect").value = rhit.fbSingleLocationManager.state;
+			document.querySelector("#typeSelect").value = rhit.fbSingleLocationManager.type;
+			document.querySelector("#datePicker").value = rhit.fbSingleLocationManager.date;
+			document.querySelector("#inputNotes").value = rhit.fbSingleLocationManager.notes;
 		});
 
 		$("#editLocationDialog").on("shown.bs.modal", (event) => {
@@ -594,44 +595,44 @@ rhit.DetailPageController = class {
 			document.querySelector("#inputQuote").focus();
 		});
 
-		document.querySelector("#submitDeleteLocation").addEventListener("click", (event)=>{
+		document.querySelector("#submitDeleteLocation").addEventListener("click", (event) => {
 			rhit.fbSingleLocationManager.delete().then(function () {
 				console.log("Document successfully deleted");
-				window.location.href="/";
-			}).catch(function (error){
+				window.location.href = "/catalog.html";
+			}).catch(function (error) {
 				console.log("Error adding document: ", error);
 			});
 		});
 
 		rhit.fbSingleLocationManager.beginListening(this.updateView.bind(this));
 	}
-	updateView() { 
+	updateView() {
 		document.querySelector("#detailName").innerHTML = rhit.fbSingleLocationManager.name;
 		document.querySelector("#detailState").innerHTML = rhit.fbSingleLocationManager.state;
 		document.querySelector("#detailType").innerHTML = rhit.fbSingleLocationManager.type;
 		document.querySelector("#detailDate").innerHTML = rhit.fbSingleLocationManager.date;
 		document.querySelector("#detailNote").innerHTML = rhit.fbSingleLocationManager.notes;
 
-		if(rhit.fbSingleUserManager.locationsVisited().includes(rhit.fbSingleLocationManager)){
-			document.querySelector("#menuEdit").style.display ="flex";
-			document.querySelector("#menuDelete").style.display ="flex";
+		if (rhit.fbSingleUserManager.locationsVisited().includes(rhit.fbSingleLocationManager)) {
+			document.querySelector("#menuEdit").style.display = "flex";
+			document.querySelector("#menuDelete").style.display = "flex";
 		}
 	}
 }
 
 rhit.FbSingleLocationManager = class {
 	constructor(locId) {
-	  this._documentSnapshot = {};
-	  this._unsubscribe = null;
-	  this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_LOCATION).doc(locId);
-	//   console.log(`listening to ${this._ref.path}`);
+		this._documentSnapshot = {};
+		this._unsubscribe = null;
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_LOCATION).doc(locId);
+		//   console.log(`listening to ${this._ref.path}`);
 	}
 	beginListening(changeListener) {
 
 		this._unsubscribe = this._ref.onSnapshot((doc) => {
 			if (doc.exists) {
 				console.log("Document data:", doc.data());
-				this._documentSnapshot=doc;
+				this._documentSnapshot = doc;
 				changeListener();
 			} else {
 				// doc.data() will be undefined in this case
@@ -642,54 +643,54 @@ rhit.FbSingleLocationManager = class {
 	}
 
 	stopListening() {
-	  this._unsubscribe();
+		this._unsubscribe();
 	}
-	update(name,type,state,dateVisited,note,custom,visited) {
+	update(name, type, state, dateVisited, note, custom, visited) {
 		this._ref.update({
-			[rhit.FB_KEY_NAME]: name,
-			[rhit.FB_KEY_TYPE]: type,
-			[rhit.FB_KEY_STATE]: state,
-			[rhit.FB_KEY_DATE_VISITED]: dateVisited,
-			[rhit.FB_KEY_NOTE]: note,
-			[rhit.FB_KEY_VISITED]: visited,
-		})
-		.then(() => {
-			console.log("Document successfully updated");
-		})
-		.catch((error) => {
-			console.error("Error adding document: ", error);
-		});
+				[rhit.FB_KEY_NAME]: name,
+				[rhit.FB_KEY_TYPE]: type,
+				[rhit.FB_KEY_STATE]: state,
+				[rhit.FB_KEY_DATE_VISITED]: dateVisited,
+				[rhit.FB_KEY_NOTE]: note,
+				[rhit.FB_KEY_VISITED]: visited,
+			})
+			.then(() => {
+				console.log("Document successfully updated");
+			})
+			.catch((error) => {
+				console.error("Error adding document: ", error);
+			});
 	}
 
 	delete() {
 		return this._ref.delete();
 	}
 
-	get name(){
+	get name() {
 		return this._documentSnapshot.get(rhit.FB_KEY_NAME);
 	}
 
-	get state(){
+	get state() {
 		return this._documentSnapshot.get(rhit.FB_KEY_STATE);
 	}
 
-	get type(){
+	get type() {
 		return this._documentSnapshot.get(rhit.FB_KEY_TYPE);
 	}
 
-	get dateVisited(){
+	get dateVisited() {
 		return this._documentSnapshot.get(rhit.FB_KEY_DATE_VISITED);
 	}
 
-	get note(){
+	get note() {
 		return this._documentSnapshot.get(rhit.FB_KEY_NOTE);
 	}
 
-	get custom(){
+	get custom() {
 		return this._documentSnapshot.get(rhit.FB_KEY_VISITED);
 	}
 
-	get visited(){
+	get visited() {
 		return this._documentSnapshot.get(rhit.FB_KEY_VISITED);
 	}
 
@@ -718,11 +719,10 @@ rhit.LoginPageController = class {
 
 				//Add user to user collection if not already included
 				console.log("Check if user already exists.");
-				if(!rhit.fbUsersManager.whereEqualTo("uid", uid)){
+				if (!rhit.fbUsersManager.whereEqualTo("uid", uid)) {
 					console.log("User has been added.");
 					rhit.fbUsersManager.add(uid, [], []);
-				}
-				else{
+				} else {
 					console.log("User already exists");
 				}
 
