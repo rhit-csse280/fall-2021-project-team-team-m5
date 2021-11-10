@@ -12,15 +12,17 @@ rhit.FB_KEY_AUTHOR = "author";
 rhit.fbLocationsManager = null;
 rhit.fbSingleLocationManager = null;
 
-rhit.FB_COLLECTION_USER = "users";
-rhit.FB_KEY_UID = "uid";
-rhit.FB_KEY_USERNAME = "username";
+rhit.FB_COLLECTION_USERS = "users";
+rhit.FB_KEY_DISPLAY_NAME = "displayName";
+rhit.FB_KEY_EMAIL = "email";
+rhit.FB_KEY_PHOTO_URL = "photoURL";
+rhit.FB_KEY_PHONE_NUMBER = "phoneNumber";
 rhit.FB_KEY_LOCATIONS_VISITED = "locationsVisited";
-rhit.FB_KEY_FRIEND_IDS = "friendIds";
 rhit.fbUsersManager = null;
 rhit.fbSingleUserManager = null;
 
 rhit.fbAuthManager = null;
+rhit.fbUserManager = null;
 
 let statesArray = ["Alaska",
 	"Alabama",
@@ -139,7 +141,6 @@ rhit.CatalogListController = class {
 			const custom = true;
 			const visited = true;
 			rhit.fbLocationsManager.add(name, state, type, dateVisited, notes, custom, visited);
-			// rhit.fbUsersManager.
 		});
 
 		$("#addPlaceDialog").on("show.bs.modal", (event) => {
@@ -213,8 +214,6 @@ rhit.Location = class {
 }
 
 rhit.FbLocationsManager = class {
-	// TODO: FbLocationsManager
-
 	constructor(uid) {
 		this._uid = uid;
 		this._documentSnapshots = [];
@@ -232,7 +231,6 @@ rhit.FbLocationsManager = class {
 				[rhit.FB_KEY_NOTE]: note,
 				[rhit.FB_KEY_CUSTOM]: custom,
 				[rhit.FB_KEY_VISITED]: visited,
-				// [rhit.FB_KEY_AUTHOR]: this.uid,
 			})
 			.then((docRef) => {
 				console.log("Document written with ID: ", docRef.id);
@@ -338,136 +336,6 @@ rhit.FbSingleLocation = class {
 	}
 }
 
-
-rhit.User = class {
-	constructor(uid, name, locationsVisited, friendIds) {
-		this.uid = uid;
-		this.username = name;
-		this.locationsVisited = locationsVisited;
-		this.friendIds = friendIds;
-	}
-}
-
-rhit.FbUsersManager = class {
-	// TODO: FbUsersManager
-
-	constructor(uid) {
-		this._uid = uid;
-		this._documentSnapshots = [];
-		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USER);
-		this._unsubscribe = null;
-	}
-
-	// Add a new document with a generated id.
-	add(uid, username, locationsVisited, friendIds) {
-		this._ref.add({
-				[rhit.FB_KEY_UID]: uid,
-				[rhit.FB_KEY_USERNAME]: username,
-				[rhit.FB_KEY_LOCATIONS_VISITED]: locationsVisited,
-				[rhit.FB_KEY_FRIEND_IDS]: friendIds,
-			})
-			.then((docRef) => {
-				console.log("Document written with ID: ", docRef.id);
-			})
-			.catch((error) => {
-				console.error("Error adding document: ", error);
-			});
-	};
-
-	beginListening(changeListener) {
-		// let query = this._ref.orderBy(rhit.FB_KEY_DATE_VISITED, "desc");
-		// if (this._uid) {
-		// 	query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
-		// }
-		this._unsubscribe = query.onSnapshot((querySnapshot) => {
-			// console.log("Location update!");
-			this._documentSnapshots = querySnapshot.docs;
-			changeListener();
-		});
-	}
-
-	stopListening() {
-		this._unsubscribe();
-	}
-
-	get length() {
-		return this._documentSnapshots.length;
-	}
-
-	getUserAtIndex(index) {
-		const docSnapshot = this._documentSnapshots[index];
-		const mq = new rhit.User(docSnapshot.id,
-			docSnapshot.get(rhit.FB_KEY_UID),
-			docSnapshot.get(rhit.FB_KEY_USERNAME),
-			docSnapshot.get(rhit.FB_KEY_LOCATIONS_VISITED),
-			docSnapshot.get(rhit.FB_KEY_FRIEND_IDS),
-		);
-		return mq;
-	}
-}
-
-rhit.FbSingleUserManager = class {
-	constructor(userId) {
-		this._documentSnapshot = {};
-		this._unsubscribe = null;
-		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_USER).doc(userId);
-	}
-	beginListening(changeListener) {
-
-		this._unsubscribe = this._ref.onSnapshot((doc) => {
-			if (doc.exists) {
-				console.log("Document data:", doc.data());
-				this._documentSnapshot = doc;
-				changeListener();
-			} else {
-				console.log("No such document!");
-			}
-		});
-	}
-
-	stopListening() {
-		this._unsubscribe();
-	}
-	update(name, locationsVisited, friendIds) {
-		this._ref.update({
-				[rhit.FB_KEY_USERNAME]: name,
-				[rhit.FB_KEY_LOCATIONS_VISITED]: locationsVisited,
-				[rhit.FB_KEY_FRIEND_IDS]: friendIds,
-
-			})
-			.then(() => {
-				console.log("Document successfully updated");
-			})
-			.catch((error) => {
-				console.error("Error adding document: ", error);
-			});
-	}
-
-	delete() {
-		return this._ref.delete();
-	}
-
-	get username() {
-		return this._documentSnapshot.get(rhit.FB_KEY_USERNAME);
-	}
-
-	get locationsVisited() {
-		return this._documentSnapshot.get(rhit.FB_KEY_LOCATIONS_VISITED);
-	}
-
-	get friendIds() {
-		return this._documentSnapshot.get(rhit.FB_KEY_FRIEND_IDS);
-	}
-
-	get numFriends() {
-		return this._documentSnapshot.get(rhit.FB_KEY_FRIEND_IDS).length;
-	}
-	get numVisited() {
-		return this._documentSnapshot.get(rhit.FB_KEY_LOCATIONS_VISITED).length;
-	}
-}
-
-
 // https://www.w3schools.com/howto/howto_js_sidenav.asp
 /* Set the width of the side navigation to 250px */
 function openNav() {
@@ -479,60 +347,215 @@ function closeNav() {
 	document.getElementById("menuSidenav").style.width = "0";
 }
 
+rhit.FbAuthManager = class {
+	constructor() {
+		this._user = null;
+		this._displayName = "";
+	}
 
-/* Main */
-/** function and class syntax examples */
-rhit.main = function () {
-	console.log("Ready");
+	beginListening(changeListener) {
+		firebase.auth().onAuthStateChanged((user) => {
+			if (user) {
+				const displayName = user.displayName;
+				const email = user.email;
+				const photoURL = user.photoURL;
+				const phoneNumber = user.phoneNumber;
+				const isAnonymous = user.isAnonymous;
+				const uid = user.uid;
+				console.log("User is signed in ", uid);
+				console.log('displayName :>> ', displayName);
+				console.log('email :>> ', email);
+				console.log('photoURL :>> ', photoURL);
+				console.log('phoneNumber :>> ', phoneNumber);
+				console.log('isAnonymous :>> ', isAnonymous);
+				console.log('uid :>> ', uid);
+			} else {
+				console.log("There is no user signed in!");
+			}
 
-	rhit.initializePage();
-};
+			this._user = user;
+			console.log(this._user);
+			changeListener();
+		});
+	}
 
+	signOut() {
+		firebase.auth().signOut().then(function () {
+			console.log("You are now signed out.");
+		}).catch(function (error) {
+			console.log("Sign out error.");
+		});
+	}
 
-rhit.startFirebaseUI = function () {
-	var uiConfig = {
-		signInSuccessUrl: 'home.html',
+	get isSignedIn() {
+		return !!this._user;
+	}
+	get uid() {
+		return this._user.uid;
+	}
 
-		//Attempt to add users to collection
-		// //https://stackoverflow.com/questions/54138770/firestore-how-to-add-user-document-to-collection-at-sign-in-with-firebaseui
-		// callbacks: {
-		// 	signInSuccessWithAuthResult: function(authResult, redirectUrl) {
-		// 		const userUid       = authResult.user.uid;
-		// 		const email         = authResult.user.email;
-		// 		const displayName   = authResult.user.displayName;
-		// 		const photoURL      = authResult.user.photoURL;
-		// 		const lastLoginAt   = authResult.user.lastLoginAt;
-		// 		const createdAt     = authResult.user.createdAt;
-		// 		setUser(userUid, email, displayName, photoURL, lastLoginAt, createdAt);
-		// 		return false;
-		// 	},
-		// },
+	get displayName() {
+		return this._user.displayName;
+	}
 
-		signInOptions: [
-			firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-			firebase.auth.EmailAuthProvider.PROVIDER_ID,
-			firebase.auth.PhoneAuthProvider.PROVIDER_ID,
-			firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
-		],
-	};
-	const ui = new firebaseui.auth.AuthUI(firebase.auth());
-	ui.start('#firebaseui-auth-container', uiConfig);
+	get email() {
+		return this._user.email;
+	}
 
-	//Attempt to add users to collection
-	// function setUser(userUid, email, displayName, photoURL, lastLoginAt, createdAt) {
-	// 	const user = {
-	// 		useruid         : userUid,
-	// 		useremail       : email,
-	// 		displayname : displayName,
-	// 		photourl        : photoURL,
-	// 		lastlogin       : lastLoginAt,
-	// 		created         : createdAt,
-	// 		locationsVisited: [],
-	// 		friendIds: []
-	// 	}
-	// 	rhit.FB_COLLECTION_USER.doc(userUid).set(user);
-	// }
+	get photoURL() {
+		return this._user.photoURL;
+	}
+
+	get phoneNumber() {
+		return this._user.phoneNumber;
+	}
+
+	get locationsVisited() {
+		return this._user.locationsVisited;
+	}
+
+	startFirebaseUI = function () {
+		var uiConfig = {
+			signInSuccessUrl: '/',
+
+			signInOptions: [
+				firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+				firebase.auth.EmailAuthProvider.PROVIDER_ID,
+				firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+				firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
+			],
+		};
+		const ui = new firebaseui.auth.AuthUI(firebase.auth());
+		ui.start('#firebaseui-auth-container', uiConfig);
+	}
 }
+
+rhit.FbUserManager = class {
+	constructor() {
+		this._collectionRef = firebase.firestore().collection(rhit.FB_COLLECTION_USERS);
+		this._document = null;
+		this._unsubscribe = null;
+	}
+
+	addNewUserMaybe(uid, displayName, email, photoURL, phoneNumber, locationsVisited) {
+		// Check if the User is in Firebase already
+		const userRef = this._collectionRef.doc(uid);
+		return userRef.get().then((doc) => {
+			if (doc.exists) {
+				console.log("User already exists:", doc.data());
+				// Do nothing there is already a User!
+				return false;
+			} else {
+				// doc.data() will be undefined in this case
+				console.log("Creating this user!");
+				return userRef.set({
+						[rhit.FB_KEY_DISPLAY_NAME]: rhit.fbAuthManager.displayName,
+						[rhit.FB_KEY_EMAIL]: rhit.fbAuthManager.email,
+						[rhit.FB_KEY_PHOTO_URL]: rhit.fbAuthManager.photoURL,
+						[rhit.FB_KEY_PHONE_NUMBER]: rhit.fbAuthManager.phoneNumber,
+						[rhit.FB_KEY_LOCATIONS_VISITED]: locationsVisited,
+					})
+					.then(() => {
+						console.log("Document successfully written!");
+						return true;
+					})
+					.catch((error) => {
+						console.error("Error writing document: ", error);
+					});
+			}
+		}).catch(function (error) {
+			console.log("Error getting document:", error);
+		});
+	}
+	beginListening(uid, changeListener) {
+		const userRef = this._collectionRef.doc(uid);
+		this._unsubscribe = userRef.onSnapshot((doc) => {
+			if (doc.exists) {
+				console.log("Document data:", doc.data());
+				this._document = doc;
+				changeListener();
+			} else {
+				console.log("No User! That's bad!");
+			}
+		});
+	}
+	stopListening() {
+		this._unsubscribe();
+	}
+
+	get isListening() {
+		return !!this._unsubscribe;
+	}
+
+	updateName(displayName) {
+		const userRef = this._collectionRef.doc(rhit.fbAuthManager.uid);
+		return userRef.update({
+				[rhit.FB_KEY_DISPLAY_NAME]: displayName,
+			})
+			.then(() => {
+				console.log("Document sucessfully updated!");
+			})
+			.catch((error) => {
+				console.log("Error updating document: ", error);
+			});
+	}
+	updatePhotoURL(photoURL) {
+		const userRef = this._collectoinRef.doc(rhit.fbAuthManager.uid);
+		userRef.update({
+				[rhit.FB_KEY_PHOTO_URL]: photoURL,
+			})
+			.then(() => {
+				console.log("Document sucessfully updated!");
+			})
+			.catch((error) => {
+				console.log("Error updating document: ", error);
+			});
+	}
+	get displayName() {
+		return this._document.get(rhit.FB_KEY_DISPLAY_NAME);
+	}
+	get photoURL() {
+		return this._document.get(rhit.FB_KEY_PHOTO_URL);
+	}
+}
+
+rhit.createUserObjectIfNeeded = function () {
+	return new Promise((resolve, reject) => {
+		// Check if a User might be new
+		if (!rhit.fbAuthManager.isSignedIn) {
+			console.log("No user. So no User check needed");
+			resolve(false);
+			return;
+		}
+		if (!document.querySelector("#loginPage")) {
+			console.log("Not on login page. So no User check needed");
+			resolve(false);
+			return;
+		}
+		// Call addNewUserMaybe
+		console.log("Checking user");
+		const locationsVisited = [];
+		rhit.fbUserManager.addNewUserMaybe(
+			rhit.fbAuthManager.uid,
+			rhit.fbAuthManager.displayName,
+			rhit.fbAuthManager.email,
+			rhit.fbAuthManager.photoURL,
+			rhit.fbAuthManager.phoneNumber,
+			locationsVisited,
+		).then((isUserNew) => {
+			resolve(isUserNew);
+		});
+	});
+}
+
+rhit.checkForRedirects = () => {
+	if (document.querySelector("#loginPage") && rhit.fbAuthManager.isSignedIn) {
+		window.location.href = "/home.html";
+	}
+	if (!document.querySelector("#loginPage") && !rhit.fbAuthManager.isSignedIn) {
+		window.location.href = "/";
+	}
+};
 
 rhit.initializePage = () => {
 	const urlParams = new URLSearchParams(window.location.search);
@@ -540,21 +563,19 @@ rhit.initializePage = () => {
 		console.log("You are on the checklist page.");
 		const uid = urlParams.get("uid");
 		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
-		rhit.fbUsersManager = new rhit.FbUsersManager(uid);
 		new rhit.ChecklistController();
 	}
 	if (document.querySelector("#catalogPage")) {
-		console.log("You are on the checklist page.");
+		console.log("You are on the catalog page.");
 		const uid = urlParams.get("uid");
 		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
-		rhit.fbUsersManager = new rhit.FbUsersManager(uid);
 		new rhit.CatalogListController();
 	}
 	if (document.querySelector("#detailPage")) {
 		console.log("You are on the detail page.");
 		const locationId = urlParams.get("id");
 		if (!locationId) {
-			window.location.href = "/";
+			window.location.href = "/catalog.html";
 		}
 		rhit.fbSingleLocationManager = new rhit.FbSingleLocationManager(locationId);
 		new rhit.DetailPageController();
@@ -563,13 +584,20 @@ rhit.initializePage = () => {
 		console.log("You are on the login page.");
 		new rhit.LoginPageController();
 	}
+	if (document.querySelector("#settingsPage")) {
+		console.log("You are on the settings page.");
+		new rhit.SettingsPageController();
+	}
+	if (document.querySelector("#profileSetupPage")) {
+		console.log("You are on the profile setup page.");
+		new rhit.ProfileSetupPageController();
+	}
 };
 
 rhit.DetailPageController = class {
 	constructor() {
 
 		document.querySelector("#submitEditLocation").addEventListener("click", (event) => {
-			// console.log("You clicked submit");
 			const name = document.querySelector("#inputName").value;
 			const state = document.querySelector("#stateSelect").value;
 			const type = document.querySelector("#typeSelect").value;
@@ -581,7 +609,6 @@ rhit.DetailPageController = class {
 
 		$("#editLocationDialog").on("show.bs.modal", (event) => {
 			//Pre animation
-			// console.log("dialog about to show up");
 			document.querySelector("#inputName").value = rhit.fbSingleLocationManager.name;
 			document.querySelector("#stateSelect").value = rhit.fbSingleLocationManager.state;
 			document.querySelector("#typeSelect").value = rhit.fbSingleLocationManager.type;
@@ -591,7 +618,6 @@ rhit.DetailPageController = class {
 
 		$("#editLocationDialog").on("shown.bs.modal", (event) => {
 			//Post animation
-			// console.log("dialog is now visible");
 			document.querySelector("#inputQuote").focus();
 		});
 
@@ -625,7 +651,6 @@ rhit.FbSingleLocationManager = class {
 		this._documentSnapshot = {};
 		this._unsubscribe = null;
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_LOCATION).doc(locId);
-		//   console.log(`listening to ${this._ref.path}`);
 	}
 	beginListening(changeListener) {
 
@@ -637,7 +662,6 @@ rhit.FbSingleLocationManager = class {
 			} else {
 				// doc.data() will be undefined in this case
 				console.log("No such document!");
-				//window.location.href = "/";
 			}
 		});
 	}
@@ -696,53 +720,93 @@ rhit.FbSingleLocationManager = class {
 
 }
 
-
 rhit.LoginPageController = class {
 	constructor() {
-
-		firebase.auth().onAuthStateChanged((user) => {
-			if (user) {
-				const displayName = user.displayName;
-				const email = user.email;
-				const photoURL = user.photoURL;
-				const phoneNumber = user.phoneNumber;
-				const isAnonymous = user.isAnonymous;
-				const uid = user.uid;
-				console.log("User is signed in ", uid);
-				console.log('displayName :>> ', displayName);
-				console.log('email :>> ', email);
-				console.log('photoURL :>> ', photoURL);
-				console.log('phoneNumber :>> ', phoneNumber);
-				console.log('isAnonymous :>> ', isAnonymous);
-				console.log('uid :>> ', uid);
-
-
-				//Add user to user collection if not already included
-				console.log("Check if user already exists.");
-				if (!rhit.fbUsersManager.whereEqualTo("uid", uid)) {
-					console.log("User has been added.");
-					rhit.fbUsersManager.add(uid, [], []);
-				} else {
-					console.log("User already exists");
-				}
-
-			} else {
-				console.log("There is no user signed in!");
-			}
-		});
-
 		document.querySelector("#signOutButton").onclick = (event) => {
 			console.log(`Sign out`);
-			firebase.auth().signOut().then(function () {
-				console.log("You are now signed out.");
-			}).catch(function (error) {
-				console.log("Sign out error.");
-			});
+			rhit.fbAuthManager.signOut();
 			location.href = 'index.html'
 		};
-		rhit.startFirebaseUI();
+		rhit.fbAuthManager.startFirebaseUI();
 	}
 }
 
+rhit.SettingsPageController = class {
+	constructor() {
+		console.log("Created Settings page controller");
+
+		document.querySelector("#signOutButton").onclick = (event) => {
+			console.log(`Sign out`);
+			rhit.fbAuthManager.signOut();
+			location.href = 'index.html'
+		};
+	}
+}
+
+rhit.ProfileSetupPageController = class {
+	constructor() {
+		console.log("Created Profile Setup page controller");
+
+		// Handle the two buttons.
+
+		document.querySelector("#submitProfile").onclick = (event) => {
+			const name = document.querySelector("#inputName").value;
+			rhit.fbUserManager.updateName(name).then(() => {
+				window.location.href = "/home.html";
+			});
+		};
+
+		document.querySelector("#submitPhoto").onclick = (event) => {
+			console.log("You pressed Upload photo");
+			document.querySelector("#inputFile").click();
+		};
+
+		document.querySelector("#inputFile").addEventListener("change", (event) => {
+			console.log("You selected a file");
+			const file = event.target.files[0];
+			console.log(`Received file named ${file.name}`);
+			const storageRef = firebase.storage().ref().child(rhit.fbAuthManager.uid);
+			storageRef.put(file).then((uploadSnapshot) => {
+				console.log("Upload is complete!", uploadSnapshot);
+				return storageRef.getDownloadURL();
+			}).then((downloadURL) => {
+				console.log("File available at", downloadURL);
+				rhit.fbUserManager.updatePhotoURL(downloadURL);
+			});
+			console.log("Uploading", file.name);
+		});
+
+		// Start listening for users
+		rhit.fbUserManager.beginListening(rhit.fbAuthManager.uid, this.updateView.bind(this));
+	}
+	updateView() {
+		if (rhit.fbUserManager.name) {
+			document.querySelector("#inputName").value = rhit.fbUserManager.displayName;
+		}
+		if (rhit.fbUserManager.photoUrl) {
+			document.querySelector("#profilePhoto").src = rhit.fbUserManager.photoURL;
+		}
+	}
+}
+
+/* Main */
+/** function and class syntax examples */
+rhit.main = function () {
+	console.log("Ready");
+	rhit.fbAuthManager = new rhit.FbAuthManager();
+	rhit.fbUserManager = new rhit.FbUserManager();
+	rhit.fbAuthManager.beginListening(() => {
+		console.log("isSignedIn = ", rhit.fbAuthManager.isSignedIn);
+		rhit.createUserObjectIfNeeded().then((isUserNew) => {
+			console.log('isUserNew :>> ', isUserNew);
+			if (isUserNew) {
+				window.location.href = "/profileSetup.html";
+				return;
+			}
+			rhit.checkForRedirects();
+			rhit.initializePage();
+		});
+	});
+};
 
 rhit.main();

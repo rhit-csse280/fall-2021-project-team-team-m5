@@ -1,0 +1,23 @@
+[debug] [2021-11-10T02:12:32.689Z] ----------------------------------------------------------------------
+[debug] [2021-11-10T02:12:32.691Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\kuznicmd\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js serve
+[debug] [2021-11-10T02:12:32.691Z] CLI Version:   9.17.0
+[debug] [2021-11-10T02:12:32.691Z] Platform:      win32
+[debug] [2021-11-10T02:12:32.691Z] Node Version:  v14.17.6
+[debug] [2021-11-10T02:12:32.692Z] Time:          Tue Nov 09 2021 21:12:32 GMT-0500 (Eastern Standard Time)
+[debug] [2021-11-10T02:12:32.692Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2021-11-10T02:12:32.746Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2021-11-10T02:12:32.747Z] > authorizing via signed-in user (kuzluth4@gmail.com)
+[debug] [2021-11-10T02:12:32.747Z] [iam] checking project team-m5-igetout for permissions ["firebase.projects.get"]
+[debug] [2021-11-10T02:12:32.749Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2021-11-10T02:12:32.749Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2021-11-10T02:12:32.945Z] <<< HTTP RESPONSE 200 {"pragma":"no-cache","expires":"Mon, 01 Jan 1990 00:00:00 GMT","cache-control":"no-cache, no-store, max-age=0, must-revalidate","date":"Wed, 10 Nov 2021 02:12:32 GMT","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2021-11-10T02:12:32.959Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/team-m5-igetout:testIamPermissions  
+ {"permissions":["firebase.projects.get"]}
+[debug] [2021-11-10T02:12:33.246Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Wed, 10 Nov 2021 02:12:33 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=95","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2021-11-10T02:12:33.249Z] > refreshing access token with scopes: []
+[debug] [2021-11-10T02:12:33.249Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2021-11-10T02:12:33.417Z] <<< HTTP RESPONSE 200 {"pragma":"no-cache","cache-control":"no-cache, no-store, max-age=0, must-revalidate","date":"Wed, 10 Nov 2021 02:12:33 GMT","expires":"Mon, 01 Jan 1990 00:00:00 GMT","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2021-11-10T02:12:33.432Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/team-m5-igetout [none]

@@ -151,3 +151,9 @@ h1{
 .dropdown-menu-right{
   left: -128px;
 }
+
+#profileSetupPage #submitProfile {
+  margin-top: 10px;
+  background-color: #800000;
+  color: white;
+}

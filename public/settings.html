@@ -12,20 +12,24 @@
 
 <body>
   <nav class="navbar navbar-dark fixed-top">
-    <div class="topnav-left"> 
+    <div class="topnav-left">
       <button onclick="openNav()" class="btn bmd-btn-icon"><i class="material-icons">list</i></button>
       <a class="navbar-brand" href="#">Settings</a>
     </div>
 
-    <div class="topnav-right"> 
+    <div class="topnav-right">
       <!-- add user name and user profile photo (desktop), see figma mocks for reference -->
       <button id="signOutButton" type="button" class="btn btn-danger">Sign Out</button>
     </div>
   </nav>
-  <div id="mainPage" class="container page-container">
+  <div id="settingsPage" class="container page-container">
 
-    <button id="deleteAccountButton" type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteAccountDialog">
+    <button id="deleteAccountButton" type="button" class="btn btn-danger" data-toggle="modal"
+      data-target="#deleteAccountDialog">
       Delete Account</button>
+
+    <!-- <button id="signOutButton" type="button" class="btn btn-primary">
+      Sign Out</button> -->
 
   </div>
 
@@ -40,8 +44,8 @@
     <a href="settings.html">Settings</a>
   </div>
 
-    <!-- Modal -->
-    <!-- <div class="modal fade" id="deleteAccountDialog" tabindex="-1" role="dialog" aria-labelledby="Delete account dialog"
+  <!-- Modal -->
+  <!-- <div class="modal fade" id="deleteAccountDialog" tabindex="-1" role="dialog" aria-labelledby="Delete account dialog"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -93,7 +97,8 @@
     </div>
   </div> -->
 
-  <div class="modal fade" id="deleteAccountDialog" tabindex="-1" role="dialog" aria-labelledby="Delete account dialog" aria-hidden="true">
+  <div class="modal fade" id="deleteAccountDialog" tabindex="-1" role="dialog" aria-labelledby="Delete account dialog"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -118,7 +123,9 @@
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
   <script src="scripts/bootstrap-material-design.js"></script>
-  <script>$("body").bootstrapMaterialDesign();</script>
+  <script>
+    $("body").bootstrapMaterialDesign();
+  </script>
   <script src="/__/firebase/7.18.0/firebase-app.js"></script>
   <script src="/__/firebase/7.18.0/firebase-analytics.js"></script>
   <script src="/__/firebase/7.18.0/firebase-auth.js"></script>
