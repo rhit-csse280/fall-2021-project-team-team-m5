@@ -18,7 +18,7 @@ rhit.FB_KEY_EMAIL = "email";
 rhit.FB_KEY_PHOTO_URL = "photoURL";
 rhit.FB_KEY_PHONE_NUMBER = "phoneNumber";
 rhit.FB_KEY_LOCATIONS_VISITED = "locationsVisited";
-rhit.fbUsersManager = null;
+// rhit.fbUsersManager = null;
 rhit.fbSingleUserManager = null;
 
 rhit.fbAuthManager = null;
@@ -171,10 +171,17 @@ rhit.CatalogListController = class {
 		const newList = htmlToElement('<div id="catalogPage" class="container page-container"></div>');
 
 		// Fill the catalogPage container with location cards using a loop
-		for (let i = 0; i < rhit.fbLocationsManager.length; i++) {
-			const loc = rhit.fbLocationsManager.getLocationAtIndex(i);
+
+		// Fills from location collection
+		// for (let i = 0; i < rhit.fbLocationsManager.length; i++) {
+		// 	const loc = rhit.fbLocationsManager.getLocationAtIndex(i);
+
+		//Fills from user's visited locations
+		for (let i = 0; i < rhit.fbUserManager.locationsVisited.length; i++) {
+			const loc = rhit.fbUserManager.getLocationAtIndex(i);
 			const newCard = this._createCard(loc);
 
+			//Press on location card to go to location detail page
 			newCard.onclick = (event) => {
 				window.location.href = `/locationDetail.html?id=${loc.id}`;
 			};
@@ -467,6 +474,7 @@ rhit.FbUserManager = class {
 			console.log("Error getting document:", error);
 		});
 	}
+
 	beginListening(uid, changeListener) {
 		const userRef = this._collectionRef.doc(uid);
 		this._unsubscribe = userRef.onSnapshot((doc) => {
@@ -479,6 +487,7 @@ rhit.FbUserManager = class {
 			}
 		});
 	}
+
 	stopListening() {
 		this._unsubscribe();
 	}
@@ -510,6 +519,25 @@ rhit.FbUserManager = class {
 			.catch((error) => {
 				console.log("Error updating document: ", error);
 			});
+	}
+
+	getLocationAtIndex(index) {
+		const locationID = this._document.locationsVisited[index]; //Get location id from user visitedLocations array
+		
+		//Get location from location collection using location id
+		const locref = rhit.FB_COLLECTION_LOCATION.where(firebase.firestore.FieldPath.documentId(), '==', locationID).get();
+
+		const mq = new rhit.Location(locref.id,
+			locref.get(rhit.FB_KEY_NAME),
+			locref.get(rhit.FB_KEY_STATE),
+			locref.get(rhit.FB_KEY_TYPE),
+			locref.get(rhit.FB_KEY_DATE_VISITED),
+			locref.get(rhit.FB_KEY_NOTE),
+			locref.get(rhit.FB_KEY_CUSTOM),
+			locref.get(rhit.FB_KEY_VISITED),
+			locref.get(rhit.FB_KEY_AUTHOR),
+		);
+		return mq;
 	}
 	get displayName() {
 		return this._document.get(rhit.FB_KEY_DISPLAY_NAME);
@@ -639,7 +667,7 @@ rhit.DetailPageController = class {
 		document.querySelector("#detailDate").innerHTML = rhit.fbSingleLocationManager.date;
 		document.querySelector("#detailNote").innerHTML = rhit.fbSingleLocationManager.notes;
 
-		if (rhit.fbSingleUserManager.locationsVisited().includes(rhit.fbSingleLocationManager)) {
+		if (rhit.fbUserManager.locationsVisited().includes(rhit.fbSingleLocationManager)) {
 			document.querySelector("#menuEdit").style.display = "flex";
 			document.querySelector("#menuDelete").style.display = "flex";
 		}
