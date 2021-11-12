@@ -6,25 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
   <link rel="stylesheet" href="styles/bootstrap-material-design.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin="" />
   <link rel="stylesheet" href="styles/main.css">
   <title>Checklist</title>
 </head>
 
 <body>
   <nav id="checklistNavbar" class="navbar navbar-dark fixed-top">
-    <div class="topnav-left"> 
+    <div class="topnav-left">
       <button onclick="openNav()" class="btn bmd-btn-icon"><i class="material-icons">list</i></button>
       <a class="navbar-brand" href="#">Checklist</a>
     </div>
 
-    <div class="topnav-right"> 
+    <div class="topnav-right">
       <!-- add user name and user profile photo (desktop), see figma mocks for reference -->
     </div>
 
-    
 
-    <ul id="checklistTabs" class="nav nav-tabs">      
+
+    <ul id="checklistTabs" class="nav nav-tabs">
 
       <li class="nav-item">
         <a class="nav-link active" id="menuAllLocations" href="/checklist.html">All</a>
@@ -49,12 +51,12 @@
       </li>
     </ul>
 
-    
+
   </nav>
 
 
   <div id="checklistPage" class="container page-container">
-    
+
 
     <div id='map'></div>
 
@@ -65,10 +67,10 @@
         <div id="barChecklist">0%</div>
       </div>
 
-      </div>
+    </div>
 
     <div class="accordion" id="accordionExample"></div>
-      <!-- <div class="card">
+    <!-- <div class="card">
         <div class="card-header" id="headingOne">
           <h2 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -155,7 +157,7 @@
 
       
     </div> -->
-    
+
 
   </div>
 
@@ -176,13 +178,17 @@
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
   <script src="scripts/bootstrap-material-design.js"></script>
-  <script>$("body").bootstrapMaterialDesign();</script>
+  <script>
+    $("body").bootstrapMaterialDesign();
+  </script>
   <script src="/__/firebase/7.18.0/firebase-app.js"></script>
   <script src="/__/firebase/7.18.0/firebase-analytics.js"></script>
   <script src="/__/firebase/7.18.0/firebase-auth.js"></script>
   <script src="/__/firebase/7.18.0/firebase-firestore.js"></script>
   <script src="/__/firebase/init.js"></script>
-  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
   <script src="scripts/us-states.js"></script>
   <script src="scripts/state_totals.js"></script>
   <script src="scripts/main.js"></script>

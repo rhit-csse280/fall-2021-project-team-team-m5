@@ -127,15 +127,15 @@ rhit.MapController = class {
 			let color;
 
 			switch (type) {
-				case "nationalpark":
+				case "NationalPark":
 					color = getColor(feature.properties.nPark);
-				case "artmuseum":
+				case "ArtMuseum":
 					color = getColor(feature.properties.aMuseum);
-				case "amusementpark":
+				case "AmusementPark":
 					color = getColor(feature.properties.aPark);
-				case "theater":
+				case "Theater":
 					color = getColor(feature.properties.theater);
-				case "zoo":
+				case "Zoo":
 					color = getColor(feature.properties.zoo);
 				default:
 					color = getColor(feature.properties.allType);
@@ -217,15 +217,15 @@ rhit.MapController = class {
 			let data;
 
 			switch (type) {
-				case "nationalpark":
+				case "NationalPark":
 					return (props.nPark) * 100;
-				case "artmuseum":
+				case "ArtMuseum":
 					return (props.aMuseum) * 100;
-				case "amusementpark":
+				case "AmusementPark":
 					return (props.aPark) * 100;
-				case "theater":
+				case "Theater":
 					return (props.theater) * 100;
-				case "zoo":
+				case "Zoo":
 					return (props.zoo) * 100;
 				default:
 					return (props.allType) * 100;
@@ -238,15 +238,15 @@ rhit.MapController = class {
 			const type = urlParams.get("type");
 
 			switch (type) {
-				case "nationalpark":
+				case "NationalPark":
 					return "National Parks";
-				case "artmuseum":
+				case "ArtMuseum":
 					return "Art Museums";
-				case "amusementpark":
+				case "AmusementPark":
 					return "Amusement Parks";
-				case "theater":
+				case "Theater":
 					return "Theaters";
-				case "zoo":
+				case "Zoo":
 					return "Zoos"
 				default:
 					return "all locations";
@@ -316,25 +316,52 @@ function htmlToElement(html) {
 
 rhit.ChecklistController = class {
 	constructor() {
+		// add(name, state, type, dateVisited, note, custom, visited)
+
+		// let names = ["Arkansas Alligator Farm & Petting Zoo", "Alabama Gulf Coast Zoo", ];
+		// let states = ["Arkansas", "Alabama", ];
+		// let types = ["Zoo", "Zoo", ];
+		let date = null;
+		let note = null;
+		let custom = false;
+		let visited = false;
+
+		// const docRef = firebase.firestore().collection(rhit.FB_COLLECTION_LOCATION).get()
+		// 	.then(function (querySnapshot) {
+		// 		querySnapshot.forEach(function (doc) {
+		// 			if (!doc.get("custom")) {
+		// 				docRef.set({
+		// 					"author": null,
+		// 				});
+
+		// 			}
+		// 			//rhit.fbLocationsManager.add(doc.get("name"), doc.get("state"), doc.get("type"), date, note, custom, visited);
+		// 			//console.log(doc.id, " => ", doc.data());
+		// 		});
+		// 	});
+
+		// for (let i = 0; i < names.length; i++) {
+		// 	rhit.fbLocationsManager.add(names[i], states[i], types[i], date, note, custom, visited);
+		// }
 
 		document.querySelector("#showNationalParks").addEventListener("click", (event) => {
-			window.location.href =`/list.html?type=NationalPark`;
+			window.location.href = `/list.html?type=NationalPark`;
 		});
 
 		document.querySelector("#showArtMuseums").addEventListener("click", (event) => {
-			window.location.href =`/list.html?type=ArtMuseum`;
+			window.location.href = `/list.html?type=ArtMuseum`;
 		});
 
 		document.querySelector("#showAmusementParks").addEventListener("click", (event) => {
-			window.location.href =`/list.html?type=AmusementPark`;
+			window.location.href = `/list.html?type=AmusementPark`;
 		});
 
 		document.querySelector("#showTheaters").addEventListener("click", (event) => {
-			window.location.href =`/list.html?type=Theater`;
+			window.location.href = `/list.html?type=Theater`;
 		});
 
 		document.querySelector("#showZoos").addEventListener("click", (event) => {
-			window.location.href =`/list.html?type=Zoo`;
+			window.location.href = `/list.html?type=Zoo`;
 		});
 
 		document.querySelector("#customTab").addEventListener("click", (event) => {
@@ -350,28 +377,80 @@ rhit.ChecklistController = class {
 		// Update Progress Bar
 		// https://www.w3schools.com/howto/howto_js_progressbar.asp
 		var bar = document.getElementById("barChecklist");
-		var userProg = X; //number of locations of the selected type the user has in their visitedLocations array
-		var totalLocations = X; //number of locations of the selected type in the location collection
+		var userProg = 100; //number of locations of the selected type the user has in their visitedLocations array
+		var totalLocations = 10; //number of locations of the selected type in the location collection
 		var width = userProg / totalLocations;
 		bar.style.width = width + "%";
 		bar.innerHTML = width + "%";
-		
-
-		//make a new quoteListContainer
-		const newList = htmlToElement('<div id="locationContainer"></div>');
-
-		//Fill qlc with quote cards using a loop
-		const urlParams = new URLSearchParams(window.location.search);
-		const type = urlParams.get("type");
 
 
+		//make a new accordion
 		const testlist = htmlToElement('<div class="accordion" id="accordionExample"></div>');
-		console.log(type);
+
+		//Fill accordion with state cards using a loop
 		for (let i = 0; i < statesArray.length; i++) {
-			const newAccordion = this._createAccordion(statesArray[i]);
+			const newAccordion = this._createAccordion(statesArray[i], i);
 			testlist.appendChild(newAccordion);
-			console.log(statesArray[i]);
 		}
+
+		const oldList = document.querySelector("#accordionExample");
+		oldList.removeAttribute("id");
+		oldList.hidden = true;
+		oldList.parentElement.appendChild(testlist);
+
+		//make a new locationContainers with a loop
+		let newLists = [];
+		for (let i = 0; i < statesArray.length; i++) {
+			newLists[i] = htmlToElement(`<div id="locationContainer${i}"></div>`);
+		}
+
+		const urlParams = new URLSearchParams(window.location.search);
+		let type = urlParams.get("type");
+
+		switch (type) {
+			case "NationalPark":
+				break;
+			case "ArtMuseum":
+				break;
+			case "AmusementPark":
+				break;
+			case "Theater":
+				break;
+			case "Zoo":
+				break;
+			default:
+				type = "allType";
+		}
+
+		console.log(type);
+
+		//Fill locationContainer with location checks using a loop
+		for (let i = 0; i < statesArray.length; i++) {
+			for (let j = 0; j < rhit.fbLocationsManager.length; j++) {
+				const loc = rhit.fbLocationsManager.getLocationAtIndex(j);
+				if (loc.state == statesArray[i] && !loc.custom) {
+					console.log(loc.name);
+					if (type == "allType") {
+						const newCheck = this._createCheck(loc);
+						newLists[i].appendChild(newCheck);
+					} else {
+						if (loc.type == type) {
+							const newCheck = this._createCheck(loc);
+							newLists[i].appendChild(newCheck);
+						}
+					}
+				}
+			}
+		}
+
+		const oldLists = [];
+		for (let i = 0; i < statesArray.length; i++) {
+			oldLists[i] = document.querySelector(`#locationContainer${i}`);
+			oldLists[i].removeAttribute("id");
+			oldLists[i].hidden = true;
+			oldLists[i].parentElement.appendChild(newLists[i]);
+		}
+
 
 		// for (let i = 0; i < rhit.fbLocationsManager.type(type).length; i++) {
 		// 	const mq = rhit.fbLocationsManager.getLocationAtIndex(i);
@@ -385,34 +464,32 @@ rhit.ChecklistController = class {
 
 	}
 
-	_createAccordion(state) {
+	_createAccordion(state, id) {
 		return htmlToElement(`
 		<div class="card">
-        <div class="card-header" id="${state}Accordion">
-          <h2 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-			${state}
-            </button>
-          </h2>
-        </div>
-        <div id="collapseOne" class="collapse show" aria-labelledby="${state}Accordion" data-parent="#accordionExample">
-          <div class="card-body" id="locationContainer">
-          </div>            
-          <!-- </div> -->
-        </div>
-      </div>
+			<div class="card-header" id="${state}Accordion">
+				<h2 class="mb-0">
+					<button class="btn btn-link show" type="button" data-toggle="collapse" data-target="#collapse${id}" aria-expanded="true" aria-controls="collapse${id}">
+						${state}
+					</button>
+				</h2>
+			</div>
+			<div id="collapse${id}" class="collapse" aria-labelledby="${state}Accordion" data-parent="#accordionExample">
+				<div class="card-body" id="locationContainer${id}">
+				</div>            
+			</div>
+      	</div>
 		`);
 	}
 
-	_createCard(clLocation) {
+	_createCheck(clLocation) {
 		return htmlToElement(`
-		<p>test</p>
-		<div class="form-check">
-	  <input class="form-check-input" type="checkbox" value="" id=${clLocation.id}>
-	  <label class="form-check-label" for=${clLocation.id}>
-		${clLocation.name}
-	  </label>
-	</div>`)
+			<div class="form-check">
+				<label class="form-check-label" for=${clLocation.id}>
+					<input class="form-check-input" type="checkbox" value="" id="${clLocation.id}"">${clLocation.name}
+				</label>
+			</div>
+		`)
 	}
 }
 
@@ -427,7 +504,8 @@ rhit.CatalogListController = class {
 			const notes = document.querySelector("#inputNotes").value;
 			const custom = true;
 			const visited = true;
-			rhit.fbLocationsManager.add(name, state, type, dateVisited, notes, custom, visited);
+			const author = rhit.fbAuthManager.uid;
+			rhit.fbLocationsManager.add(name, state, type, dateVisited, notes, custom, visited, author);
 		});
 
 		$("#addPlaceDialog").on("show.bs.modal", (event) => {
@@ -460,16 +538,20 @@ rhit.CatalogListController = class {
 		// Fill the catalogPage container with location cards using a loop
 
 		// Fills from location collection
-		// for (let i = 0; i < rhit.fbLocationsManager.length; i++) {
-		// 	const loc = rhit.fbLocationsManager.getLocationAtIndex(i);
+		for (let i = 0; i < rhit.fbLocationsManager.length; i++) {
+			const loc = rhit.fbLocationsManager.getLocationAtIndex(i);
+			const newCard = this._createCard(loc);
 
 		//Fills from user's visited locations
-		for (let i = 0; i < rhit.fbUserManager.locationsVisited.length; i++) {
-			const loc = rhit.fbUserManager.getLocationAtIndex(i);
-			const newCard = this._createCard(loc);
+		// console.log(rhit.fbUserManager.locationsVisited.length);
+		// for (let i = 0; i < rhit.fbUserManager.locationsVisited.length; i++) {
+		// 	const loc = rhit.fbUserManager.getLocationAtIndex(i);
+		// 	console.log(loc.id);
+		// 	const newCard = this._createCard(loc);
 
 			//Press on location card to go to location detail page
 			newCard.onclick = (event) => {
+				console.log(loc.id);
 				window.location.href = `/locationDetail.html?id=${loc.id}`;
 			};
 			newList.appendChild(newCard);
@@ -516,7 +598,7 @@ rhit.FbLocationsManager = class {
 	}
 
 	// Add a new document with a generated id.
-	add(name, state, type, dateVisited, note, custom, visited) {
+	add(name, state, type, dateVisited, note, custom, visited, author) {
 		this._ref.add({
 				[rhit.FB_KEY_NAME]: name,
 				[rhit.FB_KEY_TYPE]: type,
@@ -525,9 +607,13 @@ rhit.FbLocationsManager = class {
 				[rhit.FB_KEY_NOTE]: note,
 				[rhit.FB_KEY_CUSTOM]: custom,
 				[rhit.FB_KEY_VISITED]: visited,
+				[rhit.FB_KEY_AUTHOR]: author,
 			})
 			.then((docRef) => {
 				console.log("Document written with ID: ", docRef.id);
+				if (custom) {
+					rhit.fbAuthManager.locationsVisited.add(docRef.id);
+				}
 			})
 			.catch((error) => {
 				console.error("Error adding document: ", error);
@@ -536,8 +622,10 @@ rhit.FbLocationsManager = class {
 
 	beginListening(changeListener) {
 		let query = this._ref.orderBy(rhit.FB_KEY_DATE_VISITED, "desc");
-		if (this._uid) {
-			query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
+		console.log("uid: ", rhit.fbAuthManager.uid);
+		if (rhit.fbAuthManager) {
+			console.log("HERE");
+			query = query.where(rhit.FB_KEY_AUTHOR, "==", rhit.fbAuthManager.uid);
 		}
 		this._unsubscribe = query.onSnapshot((querySnapshot) => {
 			console.log("Location update!");
@@ -556,7 +644,7 @@ rhit.FbLocationsManager = class {
 
 	getLocationAtIndex(index) {
 		const docSnapshot = this._documentSnapshots[index];
-		const mq = new rhit.Location(docSnapshot.id,
+		const loc = new rhit.Location(docSnapshot.id,
 			docSnapshot.get(rhit.FB_KEY_NAME),
 			docSnapshot.get(rhit.FB_KEY_STATE),
 			docSnapshot.get(rhit.FB_KEY_TYPE),
@@ -566,7 +654,7 @@ rhit.FbLocationsManager = class {
 			docSnapshot.get(rhit.FB_KEY_VISITED),
 			docSnapshot.get(rhit.FB_KEY_AUTHOR),
 		);
-		return mq;
+		return loc;
 	}
 }
 
@@ -832,6 +920,10 @@ rhit.FbUserManager = class {
 	get photoURL() {
 		return this._document.get(rhit.FB_KEY_PHOTO_URL);
 	}
+
+	// get locationsVisited() {
+	// 	this._collectionRef.get(rhit.)
+	// }
 }
 
 rhit.createUserObjectIfNeeded = function () {
@@ -883,7 +975,7 @@ rhit.initializePage = () => {
 		console.log("You are on the checklist page.");
 		const uid = urlParams.get("uid");
 		const type = urlParams.get("type");
-		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid, type);
+		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
 		new rhit.ChecklistController();
 		new rhit.MapController();
 	}
