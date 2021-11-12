@@ -22,24 +22,27 @@
       <!-- add user name and user profile photo (desktop), see figma mocks for reference -->
     </div>
 
-    <ul id="checklistTabs" class="nav nav-tabs">
+    
+
+    <ul id="checklistTabs" class="nav nav-tabs">      
+
       <li class="nav-item">
         <a class="nav-link active" id="menuAllLocations" href="/checklist.html">All</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/checklist.html?type=nationalpark">Natonal Parks</a>
+        <a class="nav-link" id="showNationalParks" href="/checklist.html?type=NationalPark">Natonal Parks</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/checklist.html?type=artmuseum">Art Museums</a>
+        <a class="nav-link" id="showArtMuseums" href="/checklist.html?type=ArtMuseum">Art Museums</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/checklist.html?type=amusementpark">Amusement Parks</a>
+        <a class="nav-link" id="showAmusementParks" href="/checklist.html?type=AmusementPark">Amusement Parks</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/checklist.html?type=theater">Theaters</a>
+        <a class="nav-link" id="showTheaters" href="/checklist.html?type=Theater">Theaters</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/checklist.html?type=zoo">Zoos</a>
+        <a class="nav-link" id="showZoos" href="/checklist.html?type=Zoo">Zoos</a>
       </li>
       <li class="nav-item" id="customTab">
         <a class="nav-link" href="#">Custom</a>
@@ -51,57 +54,21 @@
 
 
   <div id="checklistPage" class="container page-container">
+    
 
     <div id='map'></div>
 
-    <!-- <img id="checklistMap" src="photos/test-map.png" alt="placeholder map"> -->
-
-
-        <!-- Code from https://www.amcharts.com/visited_states/# -->
-  <!-- <script src="https://www.amcharts.com/lib/3/ammap.js" type="text/javascript"></script>
-  <script src="https://www.amcharts.com/lib/3/maps/js/usaHigh.js" type="text/javascript"></script>
-  <script src="https://www.amcharts.com/lib/3/themes/light.js" type="text/javascript"></script>
-
-  <div id="mapdivCH" style="width: 1000px; height: 500px;"></div>
-
-  <script type="text/javascript">
-  var map = AmCharts.makeChart("mapdivCH",{
-  type: "map",
-  theme: "light",
-  panEventsEnabled : true,
-  backgroundColor : "#535364",
-  backgroundAlpha : 1,
-  zoomControl: {
-  zoomControlEnabled : true
-  },
-  dataProvider : {
-  map : "usaHigh",
-  getAreasFromMap : true,
-  areas :
-  []
-  },
-  areasSettings : {
-  autoZoom : true,
-  color : "#B4B4B7",
-  colorSolid : "#84ADE9",
-  selectedColor : "#84ADE9",
-  outlineColor : "#666666",
-  rollOverColor : "#9EC2F7",
-  rollOverOutlineColor : "#000000"
-  }
-  });
-  </script> -->
-
-
-
-
     <div>
-      <label for="file">Overall Progress:</label>
-      <progress id="file" value="32" max="100"> 32% </progress>
+
+      <label for="file">Progress</label>
+      <div id="progressChecklist">
+        <div id="barChecklist">0%</div>
       </div>
 
-    <div class="accordion" id="accordionExample">
-      <div class="card">
+      </div>
+
+    <div class="accordion" id="accordionExample"></div>
+      <!-- <div class="card">
         <div class="card-header" id="headingOne">
           <h2 class="mb-0">
             <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -111,13 +78,14 @@
         </div>
         <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
           <div class="card-body" id="locationContainer">
+          </div>
 
-            <!-- <div class="form-check">
+            <div class="form-check">
               <input class="form-check-input" type="checkbox" value="" id="alzoo">
               <label class="form-check-label" for="alzoo">
                 Alabama Gulf Coast Zoo
               </label>
-            </div> -->
+            </div>
             
           </div>
         </div>
@@ -134,21 +102,18 @@
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
           <div class="card-body">
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="denali">
               <label class="form-check-label" for="denali">
-                Denali National Park
+                <input class="form-check-input" type="checkbox" value="" id="denali">Denali National Park
               </label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="gatesOfTheArctic">
               <label class="form-check-label" for="gatesOfTheArctic">
-                Gates of the Arctic National Park
+                <input class="form-check-input" type="checkbox" value="" id="gatesOfTheArctic">Gates of the Arctic National Park
               </label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="glacier">
               <label class="form-check-label" for="glacier">
-                Glacier National Park
+                <input class="form-check-input" type="checkbox" value="" id="glacier">Glacier National Park
               </label>
             </div>
           </div>
@@ -189,7 +154,7 @@
       </div>
 
       
-    </div>
+    </div> -->
     
 
   </div>

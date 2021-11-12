@@ -25,7 +25,6 @@ let statesArray = ["Alabama",
 	"Alaska",
 	"Arizona",
 	"Arkansas",
-	// "American Samoa",
 	"California",
 	"Colorado",
 	"Connecticut",
@@ -33,7 +32,6 @@ let statesArray = ["Alabama",
 	"Delaware",
 	"Florida",
 	"Georgia",
-	// "Guam",
 	"Hawaii",
 	"Iowa",
 	"Idaho",
@@ -70,15 +68,14 @@ let statesArray = ["Alabama",
 	"Texas",
 	"Utah",
 	"Virginia",
-	// "Virgin Islands",
 	"Vermont",
 	"Washington",
 	"Wisconsin",
 	"West Virginia",
 	"Wyoming"
 ];
-let typesArray = ["National Park", "Art Museum", "Theater", "Amusement Park", "Historical Site", "Zoo"]
 
+let typesArray = ["National Park", "Art Museum", "Theater", "Amusement Park", "Historical Site", "Zoo"]
 
 rhit.MapController = class {
 	constructor() {
@@ -320,6 +317,26 @@ function htmlToElement(html) {
 rhit.ChecklistController = class {
 	constructor() {
 
+		document.querySelector("#showNationalParks").addEventListener("click", (event) => {
+			window.location.href =`/list.html?type=NationalPark`;
+		});
+
+		document.querySelector("#showArtMuseums").addEventListener("click", (event) => {
+			window.location.href =`/list.html?type=ArtMuseum`;
+		});
+
+		document.querySelector("#showAmusementParks").addEventListener("click", (event) => {
+			window.location.href =`/list.html?type=AmusementPark`;
+		});
+
+		document.querySelector("#showTheaters").addEventListener("click", (event) => {
+			window.location.href =`/list.html?type=Theater`;
+		});
+
+		document.querySelector("#showZoos").addEventListener("click", (event) => {
+			window.location.href =`/list.html?type=Zoo`;
+		});
+
 		document.querySelector("#customTab").addEventListener("click", (event) => {
 			window.location.href = `/checklist.html?uid=${uid}`;
 		});
@@ -330,24 +347,67 @@ rhit.ChecklistController = class {
 
 	updateCheckList() {
 
+		// Update Progress Bar
+		// https://www.w3schools.com/howto/howto_js_progressbar.asp
+		var bar = document.getElementById("barChecklist");
+		var userProg = X; //number of locations of the selected type the user has in their visitedLocations array
+		var totalLocations = X; //number of locations of the selected type in the location collection
+		var width = userProg / totalLocations;
+		bar.style.width = width + "%";
+		bar.innerHTML = width + "%";
+		
+
 		//make a new quoteListContainer
 		const newList = htmlToElement('<div id="locationContainer"></div>');
 
 		//Fill qlc with quote cards using a loop
-		for (let i = 0; i < rhit.fbLocationsManager.length; i++) {
-			const mq = rhit.fbLocationsManager.getLocationAtIndex(i);
-			const newCard = this._createCard(mq);
+		const urlParams = new URLSearchParams(window.location.search);
+		const type = urlParams.get("type");
 
-			newCard.onclick = (event) => {
-				window.location.href = `/location.html?id=${mq.id}`;
-			};
-			newList.appendChild(newCard);
+
+		const testlist = htmlToElement('<div class="accordion" id="accordionExample"></div>');
+		console.log(type);
+		for (let i = 0; i < statesArray.length; i++) {
+			const newAccordion = this._createAccordion(statesArray[i]);
+			testlist.appendChild(newAccordion);
+			console.log(statesArray[i]);
 		}
+
+		// for (let i = 0; i < rhit.fbLocationsManager.type(type).length; i++) {
+		// 	const mq = rhit.fbLocationsManager.getLocationAtIndex(i);
+		// 	const newCard = this._createCard(mq);
+
+		// 	newCard.onclick = (event) => {
+		// 		window.location.href = `/location.html?id=${mq.id}`;
+		// 	};
+		// 	newList.appendChild(newCard);
+		// }
 
 	}
 
+	_createAccordion(state) {
+		return htmlToElement(`
+		<div class="card">
+        <div class="card-header" id="${state}Accordion">
+          <h2 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+			${state}
+            </button>
+          </h2>
+        </div>
+        <div id="collapseOne" class="collapse show" aria-labelledby="${state}Accordion" data-parent="#accordionExample">
+          <div class="card-body" id="locationContainer">
+          </div>            
+          <!-- </div> -->
+        </div>
+      </div>
+		`);
+	}
+
 	_createCard(clLocation) {
-		return htmlToElement(`<div class="form-check">
+		return htmlToElement(`
+		<p>test</p>
+		<div class="form-check">
 	  <input class="form-check-input" type="checkbox" value="" id=${clLocation.id}>
 	  <label class="form-check-label" for=${clLocation.id}>
 		${clLocation.name}
@@ -822,7 +882,8 @@ rhit.initializePage = () => {
 	if (document.querySelector("#checklistPage")) {
 		console.log("You are on the checklist page.");
 		const uid = urlParams.get("uid");
-		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
+		const type = urlParams.get("type");
+		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid, type);
 		new rhit.ChecklistController();
 		new rhit.MapController();
 	}
