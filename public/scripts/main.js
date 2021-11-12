@@ -18,17 +18,14 @@ rhit.FB_KEY_EMAIL = "email";
 rhit.FB_KEY_PHOTO_URL = "photoURL";
 rhit.FB_KEY_PHONE_NUMBER = "phoneNumber";
 rhit.FB_KEY_LOCATIONS_VISITED = "locationsVisited";
-// rhit.fbUsersManager = null;
-rhit.fbSingleUserManager = null;
-
 rhit.fbAuthManager = null;
 rhit.fbUserManager = null;
 
-let statesArray = ["Alaska",
-	"Alabama",
-	"Arkansas",
-	"American Samoa",
+let statesArray = ["Alabama",
+	"Alaska",
 	"Arizona",
+	"Arkansas",
+	// "American Samoa",
 	"California",
 	"Colorado",
 	"Connecticut",
@@ -36,7 +33,7 @@ let statesArray = ["Alaska",
 	"Delaware",
 	"Florida",
 	"Georgia",
-	"Guam",
+	// "Guam",
 	"Hawaii",
 	"Iowa",
 	"Idaho",
@@ -54,7 +51,7 @@ let statesArray = ["Alaska",
 	"Mississippi",
 	"Montana",
 	"North Carolina",
-	" North Dakota",
+	"North Dakota",
 	"Nebraska",
 	"New Hampshire",
 	"New Jersey",
@@ -73,7 +70,7 @@ let statesArray = ["Alaska",
 	"Texas",
 	"Utah",
 	"Virginia",
-	"Virgin Islands",
+	// "Virgin Islands",
 	"Vermont",
 	"Washington",
 	"Wisconsin",
@@ -81,6 +78,236 @@ let statesArray = ["Alaska",
 	"Wyoming"
 ];
 let typesArray = ["National Park", "Art Museum", "Theater", "Amusement Park", "Historical Site", "Zoo"]
+
+
+rhit.MapController = class {
+	constructor() {
+		this._collectionRef = firebase.firestore().collection(rhit.FB_COLLECTION_USERS);
+
+		for (let i = 0; i < statesArray.length; i++) {
+			this.updateState(statesArray[i],
+				0,
+				0,
+				0,
+				0,
+				0,
+				0);
+		}
+
+		// Map code modified from: https://leafletjs.com/examples/choropleth/
+		var mapboxAccessToken = "pk.eyJ1Ijoia3V6bmljbWQiLCJhIjoiY2t2dmx5cWZ5NWxieDJ3bnVla2JkbnF4cSJ9.qlqp_DTAzUDWonUGTdf-5A";
+		var map = L.map('map').setView([37.8, -96], 4);
+
+		L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + mapboxAccessToken, {
+			id: 'mapbox/light-v9',
+			attribution: 'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+			tileSize: 512,
+			zoomOffset: -1
+		}).addTo(map);
+
+		L.geoJson(statesData).addTo(map);
+
+		function getColor(d) {
+			return d == 1 ? '#000000' :
+				d > 0.9 ? '#012940' :
+				d > 0.8 ? '#023858' :
+				d > 0.7 ? '#045a8d' :
+				d > 0.6 ? '#0570b0' :
+				d > 0.5 ? '#3690c0' :
+				d > 0.4 ? '#74a9cf' :
+				d > 0.3 ? '#a6bddb' :
+				d > 0.2 ? '#d0d1e6' :
+				d > 0.1 ? '#ece7f2' :
+				d > 0 ? '#fff7fb' :
+				'#ffffff';
+		}
+
+		function style(feature) {
+			// const userReference = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(rhit.fbAuthManager.uid);
+			// const dataRef = userReference.collection("states").doc(feature).get(type);
+			const urlParams = new URLSearchParams(window.location.search);
+			const type = urlParams.get("type");
+			let color;
+
+			switch (type) {
+				case "nationalpark":
+					color = getColor(feature.properties.nPark);
+				case "artmuseum":
+					color = getColor(feature.properties.aMuseum);
+				case "amusementpark":
+					color = getColor(feature.properties.aPark);
+				case "theater":
+					color = getColor(feature.properties.theater);
+				case "zoo":
+					color = getColor(feature.properties.zoo);
+				default:
+					color = getColor(feature.properties.allType);
+			}
+
+			return {
+				fillColor: color,
+				weight: 2,
+				opacity: 1,
+				color: 'white',
+				dashArray: '3',
+				fillOpacity: 0.5
+			};
+		}
+
+		L.geoJson(statesData, {
+			style: style
+		}).addTo(map);
+
+		function highlightFeature(e) {
+			var layer = e.target;
+
+			layer.setStyle({
+				weight: 5,
+				color: '#666',
+				dashArray: '',
+				fillOpacity: 0.7
+			});
+
+			if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+				layer.bringToFront();
+			}
+
+			info.update(layer.feature.properties);
+		}
+
+		function resetHighlight(e) {
+			geojson.resetStyle(e.target);
+			info.update();
+		}
+
+		var geojson;
+
+		function zoomToFeature(e) {
+			map.fitBounds(e.target.getBounds());
+		}
+
+		function onEachFeature(feature, layer) {
+			layer.on({
+				mouseover: highlightFeature,
+				mouseout: resetHighlight,
+				click: zoomToFeature
+			});
+		}
+
+		geojson = L.geoJson(statesData, {
+			style: style,
+			onEachFeature: onEachFeature
+		}).addTo(map);
+
+		var info = L.control();
+
+		info.onAdd = function (map) {
+			this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+			this.update();
+			return this._div;
+		};
+
+		// method that we will use to update the control based on feature properties passed
+		info.update = function (props) {
+			this._div.innerHTML = '<h4>US Locations Visited</h4>' + (props ?
+				'<b>' + props.name + '</b><br />' + this.getData(props) + '% of ' + this.getType() + ' visited' :
+				'Hover over a state');
+		};
+
+		info.getData = function (props) {
+			const urlParams = new URLSearchParams(window.location.search);
+			const type = urlParams.get("type");
+			let data;
+
+			switch (type) {
+				case "nationalpark":
+					return (props.nPark) * 100;
+				case "artmuseum":
+					return (props.aMuseum) * 100;
+				case "amusementpark":
+					return (props.aPark) * 100;
+				case "theater":
+					return (props.theater) * 100;
+				case "zoo":
+					return (props.zoo) * 100;
+				default:
+					return (props.allType) * 100;
+			}
+		}
+
+
+		info.getType = function () {
+			const urlParams = new URLSearchParams(window.location.search);
+			const type = urlParams.get("type");
+
+			switch (type) {
+				case "nationalpark":
+					return "National Parks";
+				case "artmuseum":
+					return "Art Museums";
+				case "amusementpark":
+					return "Amusement Parks";
+				case "theater":
+					return "Theaters";
+				case "zoo":
+					return "Zoos"
+				default:
+					return "all locations";
+			}
+		}
+
+		info.addTo(map);
+
+		var legend = L.control({
+			position: 'bottomright'
+		});
+
+		legend.onAdd = function (map) {
+
+			var div = L.DomUtil.create('div', 'info legend'),
+				grades = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+				labels = ["0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"];
+
+			// loop through our density intervals and generate a label with a colored square for each interval
+			for (var i = 0; i < grades.length; i++) {
+				div.innerHTML +=
+					'<i style="background:' + getColor(grades[i]) + '"></i> ' +
+					labels[i] + (labels[i + 1] ? '&ndash;' + labels[i + 1] + '<br>' : "");
+			}
+
+			return div;
+		};
+
+		legend.addTo(map);
+	}
+
+	updateState(state, allType, nationalpark, artmuseum, amusementpark, theater, zoo) {
+		const stateRef = this._collectionRef.doc(rhit.fbAuthManager.uid).collection("states").doc(state);
+
+		stateRef.set({
+			"allType": allType,
+			"nationalpark": nationalpark,
+			"artmuseum": artmuseum,
+			"amusementpark": amusementpark,
+			"theater": theater,
+			"zoo": zoo,
+		});
+
+		for (let i = 0; i < statesData.features.length; i++) {
+			for (let j = 0; j < statesData.length; j++) {
+				if (statesData.features[i].properties.name === stateTotals[j].name) {
+					statesData.features[i].properties.allType = allType / stateTotals[j].allType;
+					statesData.features[i].properties.nPark = nationalpark / stateTotals[j].nPark;
+					statesData.features[i].properties.aMuseum = artmuseum / stateTotals[j].aMuseum;
+					statesData.features[i].properties.aPark = amusementpark / stateTotals[j].aPark;
+					statesData.features[i].properties.theater = theater / stateTotals[j].theater;
+					statesData.features[i].properties.zoo = zoo / stateTotals[j].zoo;
+				}
+			}
+		}
+	}
+}
+
 
 // From: https://stackoverflow.com/questions/494143/creating-a-new-dom-element-from-an-html-string-using-built-in-dom-methods-or-pro/35385518#35385518
 function htmlToElement(html) {
@@ -523,7 +750,7 @@ rhit.FbUserManager = class {
 
 	getLocationAtIndex(index) {
 		const locationID = this._document.locationsVisited[index]; //Get location id from user visitedLocations array
-		
+
 		//Get location from location collection using location id
 		const locref = rhit.FB_COLLECTION_LOCATION.where(firebase.firestore.FieldPath.documentId(), '==', locationID).get();
 
@@ -587,11 +814,17 @@ rhit.checkForRedirects = () => {
 
 rhit.initializePage = () => {
 	const urlParams = new URLSearchParams(window.location.search);
+	if (document.querySelector("#mainPage")) {
+		console.log("You are on the main page.");
+		const uid = urlParams.get("uid");
+		new rhit.MapController();
+	}
 	if (document.querySelector("#checklistPage")) {
 		console.log("You are on the checklist page.");
 		const uid = urlParams.get("uid");
 		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
 		new rhit.ChecklistController();
+		new rhit.MapController();
 	}
 	if (document.querySelector("#catalogPage")) {
 		console.log("You are on the catalog page.");
