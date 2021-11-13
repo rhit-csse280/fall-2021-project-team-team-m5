@@ -294,7 +294,7 @@ rhit.MapController = class {
 				grades = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
 				labels = ["0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"];
 
-			// loop through our density intervals and generate a label with a colored square for each interval
+			// loop through our percentage intervals and generate a label with a colored square for each interval
 			for (var i = 0; i < grades.length; i++) {
 				div.innerHTML +=
 					'<i style="background:' + getColor(grades[i]) + '"></i> ' +
@@ -492,7 +492,7 @@ rhit.ChecklistController = class {
 							document.getElementById(visited[i]).checked = true;
 							break;
 						} else {
-							document.getElementById(visite[i]).checked = false;
+							document.getElementById(visited[i]).checked = false;
 						}
 					}
 				})
