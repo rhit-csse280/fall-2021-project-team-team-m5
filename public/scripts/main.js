@@ -316,34 +316,6 @@ function htmlToElement(html) {
 
 rhit.ChecklistController = class {
 	constructor() {
-		// add(name, state, type, dateVisited, note, custom, visited)
-
-		// let names = ["Arkansas Alligator Farm & Petting Zoo", "Alabama Gulf Coast Zoo", ];
-		// let states = ["Arkansas", "Alabama", ];
-		// let types = ["Zoo", "Zoo", ];
-		let date = null;
-		let note = null;
-		let custom = false;
-		let visited = false;
-
-		// const docRef = firebase.firestore().collection(rhit.FB_COLLECTION_LOCATION).get()
-		// 	.then(function (querySnapshot) {
-		// 		querySnapshot.forEach(function (doc) {
-		// 			if (!doc.get("custom")) {
-		// 				docRef.set({
-		// 					"author": null,
-		// 				});
-
-		// 			}
-		// 			//rhit.fbLocationsManager.add(doc.get("name"), doc.get("state"), doc.get("type"), date, note, custom, visited);
-		// 			//console.log(doc.id, " => ", doc.data());
-		// 		});
-		// 	});
-
-		// for (let i = 0; i < names.length; i++) {
-		// 	rhit.fbLocationsManager.add(names[i], states[i], types[i], date, note, custom, visited);
-		// }
-
 		document.querySelector("#showNationalParks").addEventListener("click", (event) => {
 			window.location.href = `/list.html?type=NationalPark`;
 		});
@@ -428,6 +400,7 @@ rhit.ChecklistController = class {
 		for (let i = 0; i < statesArray.length; i++) {
 			for (let j = 0; j < rhit.fbLocationsManager.length; j++) {
 				const loc = rhit.fbLocationsManager.getLocationAtIndex(j);
+				console.log("HERE", loc.custom);
 				if (loc.state == statesArray[i] && !loc.custom) {
 					console.log(loc.name);
 					if (type == "allType") {
@@ -451,7 +424,6 @@ rhit.ChecklistController = class {
 			oldLists[i].parentElement.appendChild(newLists[i]);
 		}
 
-
 		// for (let i = 0; i < rhit.fbLocationsManager.type(type).length; i++) {
 		// 	const mq = rhit.fbLocationsManager.getLocationAtIndex(i);
 		// 	const newCard = this._createCard(mq);
@@ -469,7 +441,7 @@ rhit.ChecklistController = class {
 		<div class="card">
 			<div class="card-header" id="${state}Accordion">
 				<h2 class="mb-0">
-					<button class="btn btn-link show" type="button" data-toggle="collapse" data-target="#collapse${id}" aria-expanded="true" aria-controls="collapse${id}">
+					<button class="btn btn-link btn-block text-left show" type="button" data-toggle="collapse" data-target="#collapse${id}" aria-expanded="true" aria-controls="collapse${id}">
 						${state}
 					</button>
 				</h2>
@@ -486,7 +458,7 @@ rhit.ChecklistController = class {
 		return htmlToElement(`
 			<div class="form-check">
 				<label class="form-check-label" for=${clLocation.id}>
-					<input class="form-check-input" type="checkbox" value="" id="${clLocation.id}"">${clLocation.name}
+					<input class="form-check-input" type="checkbox" value="" id="${clLocation.id}">${clLocation.name}
 				</label>
 			</div>
 		`)
@@ -623,8 +595,7 @@ rhit.FbLocationsManager = class {
 	beginListening(changeListener) {
 		let query = this._ref.orderBy(rhit.FB_KEY_DATE_VISITED, "desc");
 		console.log("uid: ", rhit.fbAuthManager.uid);
-		if (rhit.fbAuthManager) {
-			console.log("HERE");
+		if (rhit.fbAuthManager && document.querySelector("#catalogPage")) {
 			query = query.where(rhit.FB_KEY_AUTHOR, "==", rhit.fbAuthManager.uid);
 		}
 		this._unsubscribe = query.onSnapshot((querySnapshot) => {
