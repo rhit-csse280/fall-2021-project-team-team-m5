@@ -1005,20 +1005,9 @@ rhit.initializePage = () => {
 		new rhit.MapController();
 	}
 	if (document.querySelector("#checklistPage")) {
-
-
 		console.log("You are on the checklist page.");
 		const uid = urlParams.get("uid");
-		const type = urlParams.get("type");
 		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
-
-		// const name = "Yellowstone National Park";
-		// const state = "Wyoming";
-		// const type1 = "NationalPark";
-
-		// rhit.fbLocationsManager.add(name, state, type1, null, null, false, false, null);		
-
-
 		new rhit.ChecklistController();
 		new rhit.MapController();
 	}
@@ -1056,9 +1045,9 @@ rhit.DetailPageController = class {
 
 		document.querySelector("#submitEditLocation").addEventListener("click", (event) => {
 			const name = document.querySelector("#inputName").value;
-			const state = document.querySelector("#stateSelect").value;
-			const type = document.querySelector("#typeSelect").value;
-			const date = document.querySelector("#datePicker").value;
+			const state = statesArray[document.querySelector("#stateSelect").value-1];
+			const type = typesArray[document.querySelector("#typeSelect").value-1];
+			const date = document.querySelector('input[type="date"]').value;
 			const note = document.querySelector("#inputNotes").value;
 
 			rhit.fbSingleLocationManager.update(name, type, state, date, note, true);
@@ -1075,7 +1064,7 @@ rhit.DetailPageController = class {
 
 		$("#editLocationDialog").on("shown.bs.modal", (event) => {
 			//Post animation
-			document.querySelector("#inputQuote").focus();
+			document.querySelector("#inputName").focus();
 		});
 
 		document.querySelector("#submitDeleteLocation").addEventListener("click", (event) => {
@@ -1096,10 +1085,20 @@ rhit.DetailPageController = class {
 		document.querySelector("#detailDate").innerHTML = rhit.fbSingleLocationManager.date;
 		document.querySelector("#detailNote").innerHTML = rhit.fbSingleLocationManager.notes;
 
-		if (rhit.fbUserManager.locationsVisited().includes(rhit.fbSingleLocationManager)) {
-			document.querySelector("#menuEdit").style.display = "flex";
-			document.querySelector("#menuDelete").style.display = "flex";
-		}
+		const urlParams = new URLSearchParams(window.location.search);
+		const id = urlParams.get("id");
+
+		const userRef = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(rhit.fbAuthManager.uid);
+
+		userRef.get().then(function(doc){
+			if(doc.exists){
+				const visited = doc.data().locationsVisited;
+				if (visited.includes(id)) {
+					document.querySelector("#menuEdit").style.display = "flex";
+					document.querySelector("#menuDelete").style.display = "flex";
+				}
+			}
+		});
 	}
 }
 
@@ -1126,14 +1125,15 @@ rhit.FbSingleLocationManager = class {
 	stopListening() {
 		this._unsubscribe();
 	}
-	update(name, type, state, dateVisited, note, custom, visited) {
+	update(name, type, state, dateVisited, note, custom) {
 		this._ref.update({
 				[rhit.FB_KEY_NAME]: name,
 				[rhit.FB_KEY_TYPE]: type,
 				[rhit.FB_KEY_STATE]: state,
 				[rhit.FB_KEY_DATE_VISITED]: dateVisited,
 				[rhit.FB_KEY_NOTE]: note,
-				[rhit.FB_KEY_VISITED]: visited,
+				[rhit.FB_KEY_CUSTOM]: true,
+				[rhit.FB_KEY_VISITED]: true,
 			})
 			.then(() => {
 				console.log("Document successfully updated");
