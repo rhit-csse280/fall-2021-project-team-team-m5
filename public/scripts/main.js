@@ -450,23 +450,25 @@ rhit.ChecklistController = class {
 		}
 
 
-		// Attempted to get the checkboxes to update based on user's visited array
+		// Marks checkboxes based on user's visited array
+		const userRef = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(rhit.fbAuthManager.uid)
 		
-		// const userRef = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(rhit.fbAuthManager.uid)
-		// const visited = userRef.locationsVisited;
+		userRef.get().then(function(doc){
+			if(doc.exists){
+				const visited = doc.data().locationsVisited;
 
-		// document.querySelectorAll(".checkbox").forEach((box) => {
-		// 	for (let i = 0; i < visited.length; i++) {
-		// 		if (box.id == visited[i]) {
-		// 			document.getElementById(visited[i]).checked = true;
-		// 			break;
-		// 		} else {
-		// 			document.getElementById(visite[i]).checked = false;
-		// 		}
-		// 	}
-		// })
-
-
+				document.querySelectorAll(".checkbox").forEach((box) => {
+					for (let i = 0; i < visited.length; i++) {
+						if (box.id == visited[i]) {
+							document.getElementById(visited[i]).checked = true;
+							break;
+						} else {
+							document.getElementById(visite[i]).checked = false;
+						}
+					}
+				})
+			}
+		})
 	}
 
 	_createAccordion(state, id) {
@@ -492,6 +494,7 @@ rhit.ChecklistController = class {
 			<label class="checkbox-label" for=${clLocation.id}>
 				<input class="checkbox" type="checkbox" value="" id="${clLocation.id}">${clLocation.name}
 			</label>
+			<br>
 		`)
 	}
 }
