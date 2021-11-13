@@ -21,6 +21,13 @@ rhit.FB_KEY_LOCATIONS_VISITED = "locationsVisited";
 rhit.fbAuthManager = null;
 rhit.fbUserManager = null;
 
+rhit.LOCATION_TOTAL = 0;
+rhit.NATIONAL_PARK_TOTAL = 0;
+rhit.ART_MUSEUM_TOTAL = 0;
+rhit.AMUSEMENT_PARK_TOTAL = 0;
+rhit.THEATER_TOTAL = 0;
+rhit.ZOO_TOTAL = 0;
+
 let statesArray = ["Alabama",
 	"Alaska",
 	"Arizona",
@@ -75,11 +82,33 @@ let statesArray = ["Alabama",
 	"Wyoming"
 ];
 
-let typesArray = ["National Park", "Art Museum", "Theater", "Amusement Park", "Historical Site", "Zoo"]
+let typesArray = ["National Park", "Art Museum", "Theater", "Amusement Park", "Zoo"];
+
 
 rhit.MapController = class {
 	constructor() {
 		this._collectionRef = firebase.firestore().collection(rhit.FB_COLLECTION_USERS);
+
+		let locationTotal = 0;
+		let nParkTotal = 0;
+		let aMuseumTotal = 0;
+		let aParkTotal = 0;
+		let theaterTotal = 0;
+		let zooTotal = 0;
+		for (let i = 0; i < stateTotals.length; i++) {
+			locationTotal = locationTotal + stateTotals[i].allType;
+			nParkTotal = nParkTotal + stateTotals[i].nPark;
+			aMuseumTotal = aMuseumTotal + stateTotals[i].aMuseum;
+			aParkTotal = aParkTotal + stateTotals[i].aPark;
+			theaterTotal = theaterTotal + stateTotals[i].theater;
+			zooTotal = zooTotal + stateTotals[i].zoo;
+		}
+		rhit.LOCATION_TOTAL = locationTotal;
+		rhit.NATIONAL_PARK_TOTAL = nParkTotal;
+		rhit.ART_MUSEUM_TOTAL = aMuseumTotal;
+		rhit.AMUSEMENT_PARK_TOTAL = aParkTotal;
+		rhit.THEATER_TOTAL = theaterTotal;
+		rhit.ZOO_TOTAL = zooTotal;
 
 		for (let i = 0; i < statesArray.length; i++) {
 			this.updateState(statesArray[i],
@@ -394,15 +423,11 @@ rhit.ChecklistController = class {
 				type = "allType";
 		}
 
-		console.log(type);
-
 		//Fill locationContainer with location checks using a loop
 		for (let i = 0; i < statesArray.length; i++) {
 			for (let j = 0; j < rhit.fbLocationsManager.length; j++) {
 				const loc = rhit.fbLocationsManager.getLocationAtIndex(j);
-				console.log("HERE", loc.custom);
 				if (loc.state == statesArray[i] && !loc.custom) {
-					console.log(loc.name);
 					if (type == "allType") {
 						const newCheck = this._createCheck(loc);
 						newLists[i].appendChild(newCheck);
@@ -424,15 +449,23 @@ rhit.ChecklistController = class {
 			oldLists[i].parentElement.appendChild(newLists[i]);
 		}
 
-		// for (let i = 0; i < rhit.fbLocationsManager.type(type).length; i++) {
-		// 	const mq = rhit.fbLocationsManager.getLocationAtIndex(i);
-		// 	const newCard = this._createCard(mq);
 
-		// 	newCard.onclick = (event) => {
-		// 		window.location.href = `/location.html?id=${mq.id}`;
-		// 	};
-		// 	newList.appendChild(newCard);
-		// }
+		// Attempted to get the checkboxes to update based on user's visited array
+		
+		// const userRef = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(rhit.fbAuthManager.uid)
+		// const visited = userRef.locationsVisited;
+
+		// document.querySelectorAll(".checkbox").forEach((box) => {
+		// 	for (let i = 0; i < visited.length; i++) {
+		// 		if (box.id == visited[i]) {
+		// 			document.getElementById(visited[i]).checked = true;
+		// 			break;
+		// 		} else {
+		// 			document.getElementById(visite[i]).checked = false;
+		// 		}
+		// 	}
+		// })
+
 
 	}
 
@@ -456,11 +489,9 @@ rhit.ChecklistController = class {
 
 	_createCheck(clLocation) {
 		return htmlToElement(`
-			<div class="form-check">
-				<label class="form-check-label" for=${clLocation.id}>
-					<input class="form-check-input" type="checkbox" value="" id="${clLocation.id}">${clLocation.name}
-				</label>
-			</div>
+			<label class="checkbox-label" for=${clLocation.id}>
+				<input class="checkbox" type="checkbox" value="" id="${clLocation.id}">${clLocation.name}
+			</label>
 		`)
 	}
 }
@@ -514,12 +545,12 @@ rhit.CatalogListController = class {
 			const loc = rhit.fbLocationsManager.getLocationAtIndex(i);
 			const newCard = this._createCard(loc);
 
-		//Fills from user's visited locations
-		// console.log(rhit.fbUserManager.locationsVisited.length);
-		// for (let i = 0; i < rhit.fbUserManager.locationsVisited.length; i++) {
-		// 	const loc = rhit.fbUserManager.getLocationAtIndex(i);
-		// 	console.log(loc.id);
-		// 	const newCard = this._createCard(loc);
+			//Fills from user's visited locations
+			// console.log(rhit.fbUserManager.locationsVisited.length);
+			// for (let i = 0; i < rhit.fbUserManager.locationsVisited.length; i++) {
+			// 	const loc = rhit.fbUserManager.getLocationAtIndex(i);
+			// 	console.log(loc.id);
+			// 	const newCard = this._createCard(loc);
 
 			//Press on location card to go to location detail page
 			newCard.onclick = (event) => {
@@ -594,7 +625,6 @@ rhit.FbLocationsManager = class {
 
 	beginListening(changeListener) {
 		let query = this._ref.orderBy(rhit.FB_KEY_DATE_VISITED, "desc");
-		console.log("uid: ", rhit.fbAuthManager.uid);
 		if (rhit.fbAuthManager && document.querySelector("#catalogPage")) {
 			query = query.where(rhit.FB_KEY_AUTHOR, "==", rhit.fbAuthManager.uid);
 		}
@@ -943,10 +973,20 @@ rhit.initializePage = () => {
 		new rhit.MapController();
 	}
 	if (document.querySelector("#checklistPage")) {
+
+
 		console.log("You are on the checklist page.");
 		const uid = urlParams.get("uid");
 		const type = urlParams.get("type");
 		rhit.fbLocationsManager = new rhit.FbLocationsManager(uid);
+
+		// const name = "Yellowstone National Park";
+		// const state = "Wyoming";
+		// const type1 = "NationalPark";
+
+		// rhit.fbLocationsManager.add(name, state, type1, null, null, false, false, null);		
+
+
 		new rhit.ChecklistController();
 		new rhit.MapController();
 	}
