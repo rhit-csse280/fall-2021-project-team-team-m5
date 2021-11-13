@@ -369,6 +369,35 @@ rhit.ChecklistController = class {
 			window.location.href = `/checklist.html?uid=${uid}`;
 		});
 
+
+		//attempting to add and remove from user array when checkbox is clicked
+		const userRef = firebase.firestore().collection(rhit.FB_COLLECTION_USERS).doc(rhit.fbAuthManager.uid);
+
+		userRef.get().then(function(doc){
+			if(doc.exists){
+				const visited = doc.data().locationsVisited;
+
+				document.querySelectorAll(".checkbox").forEach((box) => {
+					// document.querySelector(box.id).addEventListener("click", (event) => {
+						if(box.checked && !visited.includes(box.id)){
+							//add location to user visited array
+							userRef.update({
+								locationsVisited: firebase.firestore.FieldValue.arrayUnion(box.id)
+							})
+							console.log("box checked");
+						}else if(!box.checked && visited.includes(box.id)){
+							//remove location from user visited array
+							userRef.update({
+								locationsVisited: firebase.firestore.FieldValue.arrayRemove(box.id)
+							})
+							console.log("box unchecked");
+						}
+					// })
+				});
+			}
+		});
+		
+
 		//Start listening
 		rhit.fbLocationsManager.beginListening(this.updateCheckList.bind(this));
 	}
