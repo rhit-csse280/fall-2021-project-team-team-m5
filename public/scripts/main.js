@@ -677,7 +677,7 @@ rhit.FbLocationsManager = class {
 
 	getLocationAtIndex(index) {
 		const docSnapshot = this._documentSnapshots[index];
-		const loc = new rhit.Location(docSnapshot.id,
+		const loc = new rhit.Location(docSnapshot.uid,
 			docSnapshot.get(rhit.FB_KEY_NAME),
 			docSnapshot.get(rhit.FB_KEY_STATE),
 			docSnapshot.get(rhit.FB_KEY_TYPE),
